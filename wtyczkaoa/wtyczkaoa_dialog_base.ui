@@ -35,6 +35,21 @@
      <height>22</height>
     </rect>
    </property>
+   <item>
+    <property name="text">
+     <string>grady</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>stopnie dziesiętne</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>radiany</string>
+    </property>
+   </item>
   </widget>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
@@ -71,6 +86,21 @@
      <height>22</height>
     </rect>
    </property>
+   <item>
+    <property name="text">
+     <string>metr kwadratowy</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>ar</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>hektar</string>
+    </property>
+   </item>
   </widget>
   <widget class="QLabel" name="label_4">
    <property name="geometry">
@@ -94,6 +124,16 @@
      <height>22</height>
     </rect>
    </property>
+   <item>
+    <property name="text">
+     <string>Tak</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Nie</string>
+    </property>
+   </item>
   </widget>
   <widget class="QgsMapLayerComboBox" name="mMapLayerComboBox">
    <property name="geometry">
