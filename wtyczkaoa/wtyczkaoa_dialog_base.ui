@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>979</width>
-    <height>536</height>
+    <width>1156</width>
+    <height>715</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -389,7 +389,7 @@
     <string/>
    </property>
   </widget>
-  <widget class="QDialogButtonBox" name="ok">
+  <widget class="QDialogButtonBox" name="close_button">
    <property name="geometry">
     <rect>
      <x>600</x>
