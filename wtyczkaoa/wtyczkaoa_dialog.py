@@ -51,14 +51,14 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         self.count_points.clicked.connect(self.count_elements)
         self.display_coordinates.clicked.connect(self.coordinates_function)
         self.area.clicked.connect(self.area_function)
-        self.clear_table.clicked.connect(self.clear_table_function)
+        self.clear_table.clicked.connect(self.clear_array_function)
         self.close_button.clicked.connect(self.clear_data_function)
         self.azimuth.clicked.connect(self.azimuth_function)
         self.segment_length.clicked.connect(self.segment_length_function)
         self.reset_all.clicked.connect(self.clear_data_function)
         self.save_file.clicked.connect(self.save_file_function)
         self.reverse_azimuth.clicked.connect(self.azimuth_function)
-        self.load_file.clicked.connect(self.choose_file_function)
+        self.load_file.clicked.connect(self.select_file_function)
         
     def show_error_message(self, error_message):
         error_dialog = QMessageBox()
