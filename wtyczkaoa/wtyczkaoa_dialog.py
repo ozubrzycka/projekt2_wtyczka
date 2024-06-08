@@ -244,7 +244,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         
     def clear_data_function(self):
         self.coordinates.clear()
-        self.surface_result.clear()
+        self.surface_area_result.clear()
         self.height_difference_result.clear()
         self.show_point_count.clear()
         self.reverse_azimuth_result.clear()
