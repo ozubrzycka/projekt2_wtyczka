@@ -16,8 +16,8 @@
   <widget class="QLabel" name="layer">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
+     <x>20</x>
+     <y>20</y>
      <width>111</width>
      <height>21</height>
     </rect>
@@ -29,8 +29,8 @@
   <widget class="QComboBox" name="unit_azimuth">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>90</y>
+     <x>20</x>
+     <y>140</y>
      <width>191</width>
      <height>22</height>
     </rect>
@@ -54,8 +54,8 @@
   <widget class="QLabel" name="azimuth_unit_name">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>70</y>
+     <x>20</x>
+     <y>110</y>
      <width>151</width>
      <height>16</height>
     </rect>
@@ -67,8 +67,8 @@
   <widget class="QLabel" name="area_unit_name">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>120</y>
+     <x>20</x>
+     <y>200</y>
      <width>111</width>
      <height>16</height>
     </rect>
@@ -80,8 +80,8 @@
   <widget class="QComboBox" name="area_unit">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>140</y>
+     <x>20</x>
+     <y>230</y>
      <width>191</width>
      <height>22</height>
     </rect>
@@ -105,8 +105,8 @@
   <widget class="QLabel" name="polygon_name">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>170</y>
+     <x>20</x>
+     <y>310</y>
      <width>211</width>
      <height>16</height>
     </rect>
@@ -118,8 +118,8 @@
   <widget class="QComboBox" name="polygon_selection">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>190</y>
+     <x>20</x>
+     <y>340</y>
      <width>191</width>
      <height>22</height>
     </rect>
@@ -138,8 +138,8 @@
   <widget class="QgsMapLayerComboBox" name="mMapLayerComboBox_layers">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>30</y>
+     <x>20</x>
+     <y>50</y>
      <width>191</width>
      <height>27</height>
     </rect>
@@ -174,7 +174,7 @@
   <widget class="QPushButton" name="azimuth">
    <property name="geometry">
     <rect>
-     <x>260</x>
+     <x>280</x>
      <y>60</y>
      <width>121</width>
      <height>28</height>
@@ -187,8 +187,8 @@
   <widget class="QPushButton" name="reverse_azimuth">
    <property name="geometry">
     <rect>
-     <x>260</x>
-     <y>100</y>
+     <x>280</x>
+     <y>140</y>
      <width>121</width>
      <height>28</height>
     </rect>
@@ -200,8 +200,8 @@
   <widget class="QPushButton" name="segment_length">
    <property name="geometry">
     <rect>
-     <x>260</x>
-     <y>140</y>
+     <x>290</x>
+     <y>220</y>
      <width>121</width>
      <height>28</height>
     </rect>
@@ -213,8 +213,8 @@
   <widget class="QPushButton" name="height_difference">
    <property name="geometry">
     <rect>
-     <x>260</x>
-     <y>180</y>
+     <x>290</x>
+     <y>310</y>
      <width>121</width>
      <height>28</height>
     </rect>
@@ -227,7 +227,7 @@
    <property name="geometry">
     <rect>
      <x>530</x>
-     <y>120</y>
+     <y>170</y>
      <width>231</width>
      <height>16</height>
     </rect>
@@ -240,7 +240,7 @@
    <property name="geometry">
     <rect>
      <x>530</x>
-     <y>140</y>
+     <y>190</y>
      <width>121</width>
      <height>28</height>
     </rect>
@@ -278,8 +278,8 @@
   <widget class="QLabel" name="load_file_name">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>230</y>
+     <x>20</x>
+     <y>380</y>
      <width>221</width>
      <height>16</height>
     </rect>
@@ -292,7 +292,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>250</y>
+     <y>410</y>
      <width>341</width>
      <height>27</height>
     </rect>
@@ -302,7 +302,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>280</y>
+     <y>440</y>
      <width>93</width>
      <height>28</height>
     </rect>
@@ -328,13 +328,13 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>340</y>
-     <width>71</width>
+     <y>480</y>
+     <width>201</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
-    <string>W Y N I K I </string>
+    <string>WYNIKI - WSPÓŁRZĘDNE</string>
    </property>
   </widget>
   <widget class="QPushButton" name="clear_table">
@@ -380,9 +380,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>370</y>
-     <width>561</width>
-     <height>271</height>
+     <y>520</y>
+     <width>291</width>
+     <height>121</height>
     </rect>
    </property>
    <property name="text">
@@ -400,6 +400,84 @@
    </property>
    <property name="standardButtons">
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="height_difference_result">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>350</y>
+     <width>111</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="surface_area_result">
+   <property name="geometry">
+    <rect>
+     <x>530</x>
+     <y>220</y>
+     <width>111</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="show_points_count">
+   <property name="geometry">
+    <rect>
+     <x>530</x>
+     <y>110</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="segment_length_result">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>260</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="reverse_azimuth_result">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>180</y>
+     <width>111</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="azimuth_result">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>100</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>
