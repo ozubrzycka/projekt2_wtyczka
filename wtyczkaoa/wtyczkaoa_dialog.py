@@ -164,7 +164,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
 
             
             
-    def area_surface_function(self):
+    def area_function(self):
         num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
         if num_elements >= 3:
             selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
