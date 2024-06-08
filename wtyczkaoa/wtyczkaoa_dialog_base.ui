@@ -428,7 +428,7 @@
     <string/>
    </property>
   </widget>
-  <widget class="QLabel" name="show_points_count">
+  <widget class="QLabel" name="show_point_count">
    <property name="geometry">
     <rect>
      <x>530</x>
