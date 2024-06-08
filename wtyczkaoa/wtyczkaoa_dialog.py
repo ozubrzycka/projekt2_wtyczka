@@ -235,7 +235,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         with open(path, 'r') as file:
             for line in file:
                 line = line.strip()
-                separated = line.split(";")
+                separated = line.split()
                 x = float(separated[0])
                 y = float(separated[1])
                 z = float(separated[2])
@@ -299,7 +299,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 file.write(reverse_azimuth_text + '\n')
                 height_difference = self.height_difference_function()
                 file.write(height_difference + '\n')
-                area = self.area_surface_function()
+                area = self.area_function()
                 acres = area / 100
                 hectares = area / 10000
                 file.write(f'Surface area is: {area:.3f} [m]\n')
