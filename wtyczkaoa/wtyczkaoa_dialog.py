@@ -67,7 +67,17 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         error_dialog.setWindowTitle("Error")
         error_dialog.exec_()
 
+    def check_current_layer(self):
+        current_layer = self.mMapLayerComboBox_layers.currentLayer()
+        if current_layer is None:
+            self.show_error_message("No layer selected")
+            return False
+        return True 
+
     def segment_length_function(self):
+        if not self.check_current_layer():
+            return
+    
         num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
         if num_elements == 2:
             selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures() 
@@ -78,6 +88,8 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             self.show_error_message("Error: Incorrect number of points selected")
                 
     def calculate_azimuth(self):
+        if not self.check_current_layer():
+            return
         num_elements = len(self.selected_features())
         if num_elements == 2:
             coords = self.extract_coordinates(self.selected_features())
@@ -89,6 +101,8 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             self.show_error_message("Error: Incorrect number of points selected")
             
     def azimuth_function(self):
+        if not self.check_current_layer():
+            return
         num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
         if num_elements == 2:
             selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures() 
@@ -129,10 +143,14 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             self.show_error_message("Error: Incorrect number of points selected")
 
     def count_elements(self):
+        if not self.check_current_layer():
+            return
         num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
         self.show_point_count.setText(str(num_elements))
 
     def coordinates_function(self):
+        if not self.check_current_layer():
+            return
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
         coords = []
         point_id = 0
@@ -143,8 +161,11 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             coords.append([X, Y])
             point_id += 1
             self.coordinates.append(f'Coordinates of point {point_id}: X = {X:.3f}, Y = {Y:.3f}')
+        
 
     def height_difference_function(self):
+        if not self.check_current_layer():
+            return
         num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
         heights = []
         if num_elements == 2: 
@@ -165,6 +186,8 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             
             
     def area_function(self):
+        if not self.check_current_layer():
+            return
         num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
         if num_elements >= 3:
             selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
@@ -221,7 +244,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         
     def clear_data_function(self):
         self.coordinates.clear()
-        self.surface_area_result.clear()
+        self.surface_result.clear()
         self.height_difference_result.clear()
         self.show_point_count.clear()
         self.reverse_azimuth_result.clear()
