@@ -188,6 +188,7 @@ class wtyczkaoa:
         if self.first_start == True:
             self.first_start = False
             self.dlg = wtyczkaoaDialog()
+            
 
         # show the dialog
         self.dlg.show()
