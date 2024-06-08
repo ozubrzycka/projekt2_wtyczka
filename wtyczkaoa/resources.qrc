@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/wtyczkaoa" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
