@@ -42,7 +42,7 @@
    </item>
    <item>
     <property name="text">
-     <string>decimal degrres</string>
+     <string>decimal_degrees</string>
     </property>
    </item>
   </widget>
