@@ -72,7 +72,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
     
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
         num_elements = len(selected_features)
-        if num_elements == 1:
+        if num_elements == 2:
             points = [[feature.geometry().asPoint().x(), feature.geometry().asPoint().y()] for feature in selected_features]
             distance = sqrt((points[0][0] - points[1][0])**2 + (points[0][1] - points[1][1])**2)
             self.segment_length_result.setText(f'Distance between points (point id:1- id:2) is: {distance:.3f} [m]')
@@ -342,3 +342,4 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                         self.segment_length_result.setText(section.replace("Segment Length:\n", ""))
                     elif section.startswith("Surface Area:"):
                         self.surface_area_result.setText(section.replace("Surface Area:\n", ""))
+
