@@ -153,7 +153,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             return
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
         coords = ""
-        point_id = 0
+        point_id = 1
         for feature in selected_features:
             wsp = feature.geometry().asPoint()
             X = wsp.x()
