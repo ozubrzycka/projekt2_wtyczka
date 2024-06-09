@@ -122,7 +122,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             Az = atan2((K[1][1] - K[0][1]), (K[1][0] - K[0][0]))
             print(f"Initial Azimuth (radians): {Az}")  # Debugging
         
-            if 'decimal degrees' == self.unit_azimuth.currentText():
+            if 'decimal_degrees' == self.unit_azimuth.currentText():
                 Az = Az * 180 / pi
                 if Az < 0:
                     Az += 360
