@@ -183,6 +183,13 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             self.height_difference_result.setText("Error")
             self.show_error_message("Too many points selected") 
 
+
+    def get_angle(self, point, centroid):
+        dx = point[0] - centroid[0]
+        dy = point[1] - centroid[1]
+        angle = atan2(dy, dx)
+        return angle
+
     def sort_points(self, points):
         centroid = [sum(p[0] for p in points) / len(points), sum(p[1] for p in points) / len(points)]
         sorted_points = sorted(points, key=lambda p: self.get_angle(p, centroid))
