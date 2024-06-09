@@ -83,7 +83,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures() 
             points = [[feature.geometry().asPoint().x(), feature.geometry().asPoint().y()] for feature in selected_features]
             distance = sqrt((points[0][0] - points[1][0])**2 + (points[0][1] - points[1][1])**2)
-            self.segment_length_result.setText(f'Distance between points (point id:1- id:2) is: {distance:.3f} [m]')
+            self.segment_length_result.setText(f'(point id:1- id:2) is: {distance:.3f} [m]')
         else:
             self.show_error_message("Error: Incorrect number of points selected")
                 
@@ -95,8 +95,8 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             coords = self.extract_coordinates(self.selected_features())
             azimuth = atan2((coords[1][1] - coords[0][1]), (coords[1][0] - coords[0][0]))
             azimuth, reverse_azimuth = self.convert_azimuth_units(azimuth)
-            self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {azimuth}')
-            self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth}')
+            self.azimuth_result.setText(f'(point id:1- id:2): {azimuth}')
+            self.reverse_azimuth_result.setText(f'(point id:2- id:1): {reverse_azimuth}')
         else:
             self.show_error_message("Error: Incorrect number of points selected")
             
@@ -119,26 +119,26 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                     Az += 360
                 elif Az > 360:
                     Az -= 360
-                self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {Az:.7f}[decimal_degrees]')
+                self.azimuth_result.setText(f'(point id:1- id:2): {Az:.7f}[decimal_degrees]')
                 Az_odw = Az+180
                 if Az_odw < 0:
                     Az_odw += 360
                 elif Az_odw > 360:
                     Az_odw -= 360
-                self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {Az_odw:.7f}[decimal_degrees]')
+                self.reverse_azimuth_result.setText(f'(point id:2- id:1): {Az_odw:.7f}[decimal_degrees]')
             elif 'grads' == self.unit_azimuth.currentText():
                 Az =Az*200/pi
                 if Az < 0:
                     Az += 400
                 elif Az > 400:
                     Az -= 400
-                self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {Az:.4f}[grads]')
+                self.azimuth_result.setText(f'(point id:1- id:2): {Az:.4f}[grads]')
                 Az_odw = Az+200
                 if Az_odw < 0:
                     Az_odw += 400
                 elif Az_odw > 400:
                     Az_odw -= 400
-                self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {Az_odw:.4f}[grads]')
+                self.reverse_azimuth_result.setText(f'(point id:2- id:1): {Az_odw:.4f}[grads]')
         else:
             self.show_error_message("Error: Incorrect number of points selected")
 
@@ -172,10 +172,10 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             selected_layer = iface.activeLayer()
             selected_features = selected_layer.selectedFeatures()
             for feature in selected_features:
-                height = float(feature[2])
+                height = float(feature[20])
                 heights.append(height)
             height_difference = heights[1] - heights[0]
-            self.height_difference_result.setText(f'Height difference is (point id:1- id:2): {height_difference:.3f}[m]')
+            self.height_difference_result.setText(f'{height_difference:.3f}[m]')
         elif num_elements < 2:
             self.height_difference_result.setText("Error")
             self.show_error_message("Too few points selected")
