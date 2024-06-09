@@ -113,19 +113,19 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {azimuth_degrees:.7f}[decimal_degrees]')
                 self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth_degrees:.7f}[decimal_degrees]')
 
-        elif 'grads' == self.unit_azimuth.currentText():
-            azimuth_grads = azimuth * 200 / pi
-            if azimuth_grads < 0:
-                azimuth_grads += 400
-            elif azimuth_grads > 400:
-                azimuth_grads -= 400
-            reverse_azimuth_grads = azimuth_grads + 200
-            if reverse_azimuth_grads < 0:
-                reverse_azimuth_grads += 400
-            elif reverse_azimuth_grads > 400:
-                reverse_azimuth_grads -= 400
-            self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {azimuth_grads:.4f}[grads]')
-            self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth_grads:.4f}[grads]')
+            elif 'grads' == self.unit_azimuth.currentText():
+                azimuth_grads = azimuth * 200 / pi
+                if azimuth_grads < 0:
+                    azimuth_grads += 400
+                elif azimuth_grads > 400:
+                    azimuth_grads -= 400
+                reverse_azimuth_grads = azimuth_grads + 200
+                if reverse_azimuth_grads < 0:
+                    reverse_azimuth_grads += 400
+                elif reverse_azimuth_grads > 400:
+                    reverse_azimuth_grads -= 400
+                self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {azimuth_grads:.4f}[grads]')
+                self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth_grads:.4f}[grads]')
         else:
             self.show_error_message("Error: Incorrect number of points selected")
 
@@ -244,23 +244,19 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                     coordinates += f"Coordinates of point number {point_id}: X = {X:.3f}, Y = {Y:.3f}\n"
                     point_id += 1
                 file.write(coordinates)
-
+    
                 distance = self.segment_length_function()
                 if distance is not None:
                     file.write(f'Distance between points (point id:1- id:2) is: {distance:.3f} [m]\n')
-
-                azimuth, reverse_azimuth = self.calculate_azimuth()
-                if azimuth is not None and reverse_azimuth is not None:
-                    file.write(f'Azimuth is (point id:1- id:2): {azimuth}\n')
-                    file.write(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth}\n')
-
+    
+                self.azimuth_function()  # Update: Replaced calculate_azimuth() with calculate_and_display_azimuth()
+    
                 height_difference = self.height_difference_function()
                 if height_difference is not None:
                     file.write(f'Height difference: {height_difference:.3f}[m]\n')
+    
+                self.area_function()  # Update: Replaced area with self.area_function()
 
-                area = self.area_function()
-                if area is not None:
-                    file.write(f'Surface area: {area}\n')
 
     def select_file_function(self):
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open File", "", "Text Files (*.txt);;All Files (*)")
