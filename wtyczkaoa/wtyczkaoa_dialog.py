@@ -307,13 +307,15 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 file.write(f"Distance between points: Too many points selected\n")
     
             azimuth_text, reverse_azimuth_text = self.calculate_azimuth()
-            file.write(azimuth_text + '\n')
-            file.write(reverse_azimuth_text + '\n')
+            file.write(f'{azimuth_text}\n')
+            file.write(f'{reverse_azimuth_text}\n')
+
     
             height_difference = self.height_difference_function()
             area = self.area_function()
     
-            file.write(self.coordinates.text() + '\n')  # Poprawione użycie QLabel
+            file.write(str(self.coordinates.text()) + '\n')
+  # Poprawione użycie QLabel
 
 
 
