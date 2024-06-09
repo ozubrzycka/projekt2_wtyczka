@@ -24,7 +24,6 @@
 
 import os
 from qgis.core import QgsVectorLayer, QgsProject
-
 from math import atan2, sqrt, pi
 from qgis.utils import iface
 from qgis.PyQt import QtWidgets, uic
@@ -42,6 +41,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         """Constructor."""
         super(wtyczkaoaDialog, self).__init__(parent)
         self.setupUi(self)
+        self.mMapLayerComboBox_layers = QgsMapLayerComboBox(self)
         self.height_difference.clicked.connect(self.height_difference_function)
         self.count_points.clicked.connect(self.count_elements)
         self.display_coordinates.clicked.connect(self.coordinates_function)
