@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1156</width>
-    <height>715</height>
+    <height>662</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -102,39 +102,6 @@
     </property>
    </item>
   </widget>
-  <widget class="QLabel" name="polygon_name">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>310</y>
-     <width>211</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Rysować poligon pola powierzchni?</string>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="polygon_selection">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>340</y>
-     <width>191</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <item>
-    <property name="text">
-     <string>Tak</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Nie</string>
-    </property>
-   </item>
-  </widget>
   <widget class="QgsMapLayerComboBox" name="mMapLayerComboBox_layers">
    <property name="geometry">
     <rect>
@@ -148,7 +115,7 @@
   <widget class="QLabel" name="possible_operations">
    <property name="geometry">
     <rect>
-     <x>260</x>
+     <x>290</x>
      <y>10</y>
      <width>221</width>
      <height>16</height>
@@ -227,7 +194,7 @@
    <property name="geometry">
     <rect>
      <x>650</x>
-     <y>160</y>
+     <y>140</y>
      <width>231</width>
      <height>16</height>
     </rect>
@@ -240,7 +207,7 @@
    <property name="geometry">
     <rect>
      <x>650</x>
-     <y>190</y>
+     <y>160</y>
      <width>121</width>
      <height>28</height>
     </rect>
@@ -253,7 +220,7 @@
    <property name="geometry">
     <rect>
      <x>650</x>
-     <y>30</y>
+     <y>40</y>
      <width>231</width>
      <height>16</height>
     </rect>
@@ -278,8 +245,8 @@
   <widget class="QLabel" name="load_file_name">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>380</y>
+     <x>10</x>
+     <y>370</y>
      <width>221</width>
      <height>16</height>
     </rect>
@@ -363,19 +330,6 @@
     <string>Zapisz wyniki</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="reset_all">
-   <property name="geometry">
-    <rect>
-     <x>830</x>
-     <y>470</y>
-     <width>201</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Wyczyść wszystkie pola tekstowe</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="coordinates">
    <property name="geometry">
     <rect>
@@ -392,9 +346,9 @@
   <widget class="QDialogButtonBox" name="close_button">
    <property name="geometry">
     <rect>
-     <x>600</x>
-     <y>620</y>
-     <width>201</width>
+     <x>820</x>
+     <y>600</y>
+     <width>211</width>
      <height>28</height>
     </rect>
    </property>
