@@ -172,7 +172,8 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             selected_layer = iface.activeLayer()
             selected_features = selected_layer.selectedFeatures()
             for feature in selected_features:
-                heights.append(feature[2])
+                height = float(feature[2])
+                heights.append(height)
             height_difference = heights[1] - heights[0]
             self.height_difference_result.setText(f'Height difference is (point id:1- id:2): {height_difference:.3f}[m]')
         elif num_elements < 2:
