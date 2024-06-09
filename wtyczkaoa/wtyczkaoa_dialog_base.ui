@@ -45,11 +45,6 @@
      <string>stopnie dziesiętne</string>
     </property>
    </item>
-   <item>
-    <property name="text">
-     <string>radiany</string>
-    </property>
-   </item>
   </widget>
   <widget class="QLabel" name="azimuth_unit_name">
    <property name="geometry">
@@ -407,7 +402,7 @@
     <rect>
      <x>300</x>
      <y>350</y>
-     <width>111</width>
+     <width>231</width>
      <height>31</height>
     </rect>
    </property>
@@ -420,7 +415,7 @@
     <rect>
      <x>530</x>
      <y>220</y>
-     <width>111</width>
+     <width>271</width>
      <height>41</height>
     </rect>
    </property>
@@ -446,7 +441,7 @@
     <rect>
      <x>290</x>
      <y>260</y>
-     <width>121</width>
+     <width>211</width>
      <height>31</height>
     </rect>
    </property>
@@ -459,7 +454,7 @@
     <rect>
      <x>290</x>
      <y>180</y>
-     <width>111</width>
+     <width>221</width>
      <height>31</height>
     </rect>
    </property>
@@ -472,7 +467,7 @@
     <rect>
      <x>290</x>
      <y>100</y>
-     <width>101</width>
+     <width>201</width>
      <height>31</height>
     </rect>
    </property>
