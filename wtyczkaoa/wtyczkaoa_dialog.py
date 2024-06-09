@@ -85,7 +85,11 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             wsp = feature.geometry().asPoint()
             coords.append([wsp.x(), wsp.y()])
         return coords
-
+    
+    def convert_azimuth_units(self, azimuth):
+        reverse_azimuth = azimuth + pi if azimuth < 0 else azimuth - pi
+        return azimuth, reverse_azimuth
+    
     def calculate_azimuth(self):
         if not self.check_current_layer():
             return None, None
@@ -259,38 +263,44 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         self.mMapLayerComboBox_layers.clear()
 
     def save_file_function(self):
-        filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", "", "Text Files (*.txt);;All Files (*)")
-        if filename:
-            with open(filename, "w") as file:
-                selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
-                num_points = len(selected_features)
-                file.write(f'Number of selected points: {num_points}\n')
-                coordinates = ""
-                point_id = 1
-                for feature in selected_features:
-                    wsp = feature.geometry().asPoint()
-                    X = wsp.x()
-                    Y = wsp.y()
-                    coordinates += f"Coordinates of point number {point_id}: X = {X:.3f}, Y = {Y:.3f}\n"
-                    point_id += 1
-                file.write(coordinates)
-
+        with open("Result_File_Plugin_Alicja_Oliwia.txt", "w") as file:
+            selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
+            num_points = len(selected_features)
+            file.write(f'Number of selected points: {num_points}\n')
+            coordinates = []
+            iden = 0
+            for feature in selected_features:
+                wsp = feature.geometry().asPoint()
+                X = wsp.x()
+                Y = wsp.y()
+                coordinates.append([X, Y])
+                iden += 1
+                file.write(f"Coordinates of point number {iden}: X = {X:.3f}, Y = {Y:.3f}\n")
+    
+            num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
+            if num_elements == 2:
                 distance = self.segment_length_function()
-                if distance is not None:
-                    file.write(f'Distance between points (point id:1- id:2) is: {distance:.3f} [m]\n')
+                file.write(f'Distance between points (point id:1- id:2) is: {distance:.3f} [m] \n')
+            elif num_elements < 2:
+                file.write(f"Distance between points: Too few points selected\n ")
+            elif num_elements > 2:
+                file.write(f"Distance between points: Too many points selected\n")
+    
+            azimuth, reverse_azimuth = self.calculate_azimuth()
+            if 'decimal degrees' == self.unit_azimuth.currentText():
+                azimuth_text = f'Azimuth is (point id:1- id:2): {azimuth:.7f}[decimal degrees]'
+                reverse_azimuth_text = f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.7f}[decimal degrees]'
+            elif 'grads' == self.unit_azimuth.currentText():
+                azimuth_text = f'Azimuth is (point id:1- id:2): {azimuth:.4f}[grads]'
+                reverse_azimuth_text = f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.4f}[grads]'
+            file.write(azimuth_text + '\n')
+            file.write(reverse_azimuth_text + '\n')
+    
+            height_difference = self.height_difference_function()
+            area = self.area_function()
 
-                azimuth, reverse_azimuth = self.calculate_azimuth()
-                if azimuth is not None and reverse_azimuth is not None:
-                    file.write(f'Azimuth is (point id:1- id:2): {azimuth}\n')
-                    file.write(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth}\n')
+        file.write(self.coordinates.text() + '\n')  # Poprawione użycie QLabel
 
-                height_difference = self.height_difference_function()
-                if height_difference is not None:
-                    file.write(f'Height difference: {height_difference:.3f}[m]\n')
-
-                area = self.area_function()
-                if area is not None:
-                    file.write(f'Surface area: {area}\n')
 
     def select_file_function(self):
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open File", "", "Text Files (*.txt);;All Files (*)")
