@@ -37,12 +37,12 @@
    </property>
    <item>
     <property name="text">
-     <string>grady</string>
+     <string>grads</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>stopnie dziesiętne</string>
+     <string>decimal degrres</string>
     </property>
    </item>
   </widget>
@@ -83,17 +83,22 @@
    </property>
    <item>
     <property name="text">
-     <string>metr kwadratowy</string>
+     <string>square_meters</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>ar</string>
+     <string>ares</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>hektar</string>
+     <string>square_kilometers</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>hectares</string>
     </property>
    </item>
   </widget>
