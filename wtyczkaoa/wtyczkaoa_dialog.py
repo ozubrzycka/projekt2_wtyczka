@@ -23,6 +23,8 @@
 """
 
 import os
+from qgis.core import QgsVectorLayer, QgsProject
+from qgis.gui import QgsMapLayerProxyModel
 from math import atan2, sqrt, pi
 from qgis.utils import iface
 from qgis.PyQt import QtWidgets, uic
@@ -127,7 +129,6 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             self.show_error_message("Error: Incorrect number of points selected")
             return None, None
 
-
     def azimuth_function(self):
         if not self.check_current_layer():
             return
@@ -185,100 +186,206 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             return
         num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
         self.show_point_count.setText(str(num_elements))
-        return num_elements
 
     def coordinates_function(self):
         if not self.check_current_layer():
             return
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
-        coordinates = [[feature.geometry().asPoint().x(), feature.geometry().asPoint().y()] for feature in selected_features]
-        self.coordinates_array.setRowCount(len(coordinates))
-        for i, (x, y) in enumerate(coordinates):
-            self.coordinates_array.setItem(i, 0, QtWidgets.QTableWidgetItem(str(x)))
-            self.coordinates_array.setItem(i, 1, QtWidgets.QTableWidgetItem(str(y)))
-        return coordinates
+        coords = ""
+        point_id = 0
+        for feature in selected_features:
+            wsp = feature.geometry().asPoint()
+            X = wsp.x()
+            Y = wsp.y()
+            coords += f'Coordinates of point {point_id}: X = {X:.3f}, Y = {Y:.3f}\n'
+            point_id += 1
+        self.coordinates.setText(coords)
 
     def height_difference_function(self):
         if not self.check_current_layer():
             return
-        selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
-        if len(selected_features) == 2:
-            heights = []
+        num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
+        heights = []
+        if num_elements == 2:
+            selected_layer = iface.activeLayer()
+            selected_features = selected_layer.selectedFeatures()
             for feature in selected_features:
-                geometry = feature.geometry()
-                if geometry.isMultipart():
-                    parts = geometry.asMultiPoint()
-                    heights.append(parts[0].z())
-                else:
-                    point = geometry.asPoint()
-                    heights.append(point.z())
-            height_diff = abs(heights[1] - heights[0])
-            self.height_difference_result.setText(f'Height difference: {height_diff:.3f} [m]')
-            return height_diff
-        else:
-            self.show_error_message("Error: Incorrect number of points selected")
+                height = float(feature.geometry().z())
+                heights.append(height)
+            height_difference = heights[1] - heights[0]
+            self.height_difference_result.setText(f'Height difference {height_difference:.3f}[m]')
+            return height_difference
+        elif num_elements < 2:
+            self.height_difference_result.setText("Error")
+            self.show_error_message("Too few points selected")
+        elif num_elements > 2:
+            self.height_difference_result.setText("Error")
+            self.show_error_message("Too many points selected")
+
+    def get_angle(self, point, centroid):
+        dx = point[0] - centroid[0]
+        dy = point[1] - centroid[1]
+        angle = atan2(dy, dx)
+        return angle
+
+    def sort_points(self, points):
+        centroid = [sum(p[0] for p in points) / len(points), sum(p[1] for p in points) / len(points)]
+        sorted_points = sorted(points, key=lambda p: self.get_angle(p, centroid))
+        return sorted_points
 
     def area_function(self):
         if not self.check_current_layer():
-            return
-        selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
-        if len(selected_features) >= 3:
-            points = [[feature.geometry().asPoint().x(), feature.geometry().asPoint().y()] for feature in selected_features]
-            area = 0
-            for i in range(-1, len(points) - 1):
-                area += points[i][0] * points[i + 1][1] - points[i + 1][0] * points[i][1]
-            area = abs(area) / 2
-            self.area_result.setText(f'Area: {area:.3f} [m²]')
-            return area
+            return None
+        num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
+        if num_elements >= 3:  # Zmieniono warunek na sprawdzenie przynajmniej trzech punktów
+            selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
+            points = []
+            for feature in selected_features:
+                point = feature.geometry().asPoint()
+                points.append([point.x(), point.y()])
+            points = self.sort_points(points)
+            area_sum = 0
+            for i in range(len(points)):
+                if i < len(points) - 1:
+                    P = (points[i][0] * (points[i + 1][1] - points[i - 1][1]))
+                    area_sum += P
+            P = (points[-1][0] * (points[-2][1]))
+            area_sum += P
+            area_sum = 0.5 * abs(area_sum)
+            
+            # Zaktualizowano etykietę pola powierzchni w interfejsie użytkownika
+            self.surface_area_result.setText(f'Surface area: {area_sum:.3f} [m2]')
+            
+            # Zwracamy obliczoną powierzchnię
+            return area_sum
         else:
-            self.show_error_message("Error: At least 3 points required")
+            self.show_error_message("Error: Incorrect number of points selected")
+            return None
 
+        
     def clear_array_function(self):
+        self.coordinates.clear()
+        self.show_point_count.clear()
         self.azimuth_result.clear()
         self.reverse_azimuth_result.clear()
         self.height_difference_result.clear()
-        self.area_result.clear()
-        self.show_point_count.clear()
-        self.coordinates_array.clearContents()
+        self.segment_length_result.clear()
+        self.surface_area_result.clear()
 
     def clear_data_function(self):
         self.clear_array_function()
+        self.mMapLayerComboBox_layers.clear()
 
-    def save_file_function(self):
-        filepath, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', '', 'Text Files (*.txt)')
-        if filepath:
-            try:
-                with open(filepath, 'w') as file:
-                    file.write(f'Azimuth: {self.azimuth_result.text()}\n')
-                    file.write(f'Reverse Azimuth: {self.reverse_azimuth_result.text()}\n')
-                    file.write(f'Height Difference: {self.height_difference_result.text()}\n')
-                    file.write(f'Area: {self.area_result.text()}\n')
-                    file.write(f'Point Count: {self.show_point_count.text()}\n')
-                    for row in range(self.coordinates_array.rowCount()):
-                        x_item = self.coordinates_array.item(row, 0)
-                        y_item = self.coordinates_array.item(row, 1)
-                        if x_item and y_item:
-                            file.write(f'Point {row + 1}: X={x_item.text()}, Y={y_item.text()}\n')
-            except Exception as e:
-                self.show_error_message(f"Error saving file: {e}")
+    def save_file_function(self, filename=None):
+        if filename is None:
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", "", "Text Files (*.txt);;All Files (*)")
+            if not filename:
+                return  # User cancelled the save dialog
+        
+        azimuth_text = ""
+        reverse_azimuth_text = ""
+        area_text = ""
+        
+        try:
+            with open(filename, "w") as file:
+                selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
+                num_points = len(selected_features)
+                file.write(f'Number of selected points: {num_points}\n')
+                coordinates = []
+                iden = 0
+                for feature in selected_features:
+                    wsp = feature.geometry().asPoint()
+                    X = wsp.x()
+                    Y = wsp.y()
+                    coordinates.append([X, Y])
+                    iden += 1
+                    file.write(f"Coordinates of point number {iden}: X = {X:.3f}, Y = {Y:.3f}\n")
+        
+                num_elements = len(selected_features)
+                if num_elements == 2:
+                    distance = self.segment_length_function()
+                    file.write(f'Distance between points (point id:1- id:2) is: {distance:.3f} [m] \n')
+        
+                    azimuth, reverse_azimuth = self.calculate_azimuth()
+                    if azimuth is not None:
+                        if 'decimal degrees' == self.unit_azimuth.currentText():
+                            azimuth_text = f'Azimuth is (point id:1- id:2): {azimuth:.7f}[decimal degrees]'
+                            reverse_azimuth_text = f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.7f}[decimal degrees]'
+                        elif 'grads' == self.unit_azimuth.currentText():
+                            azimuth_text = f'Azimuth is (point id:1- id:2): {azimuth:.4f}[grads]'
+                            reverse_azimuth_text = f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.4f}[grads]'
+                
+                elif num_elements == 3:
+                    area = self.area_function()
+                    if area is not None:
+                        area_text = f'Surface area is: {area:.3f} [m2]'
+                    
+                file.write(azimuth_text + '\n')
+                file.write(reverse_azimuth_text + '\n')
+                file.write(area_text + '\n')
+            
+                height_difference = self.height_difference_function()
+                if height_difference is not None:
+                    file.write(f'Height difference: {height_difference:.3f}[m]\n')
+                    
+        except Exception as e:
+            self.show_error_message(f"Error saving file: {str(e)}")
 
     def select_file_function(self):
-        filepath, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File', '', 'Text Files (*.txt)')
-        if filepath:
-            try:
-                with open(filepath, 'r') as file:
-                    data = file.readlines()
-                    self.clear_array_function()
-                    self.azimuth_result.setText(data[0].strip().split(': ')[1])
-                    self.reverse_azimuth_result.setText(data[1].strip().split(': ')[1])
-                    self.height_difference_result.setText(data[2].strip().split(': ')[1])
-                    self.area_result.setText(data[3].strip().split(': ')[1])
-                    self.show_point_count.setText(data[4].strip().split(': ')[1])
-                    for i, line in enumerate(data[5:]):
-                        x, y = line.strip().split(': ')[1].split(', ')
-                        self.coordinates_array.setRowCount(i + 1)
-                        self.coordinates_array.setItem(i, 0, QtWidgets.QTableWidgetItem(x.split('=')[1]))
-                        self.coordinates_array.setItem(i, 1, QtWidgets.QTableWidgetItem(y.split('=')[1]))
-            except Exception as e:
-                self.show_error_message(f"Error loading file: {e}")
-
+        filename, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open File", "", "Text Files (*.txt);;All Files (*)")
+        if filename:
+            with open(filename, 'r') as file:
+                data = file.read()
+                # Assuming a specific format of the file, we should parse it accordingly
+                sections = data.split("\n\n")
+                for section in sections:
+                    if section.startswith("Coordinates:"):
+                        self.coordinates.setText(section.replace("Coordinates:\n", ""))
+                    elif section.startswith("Point Count:"):
+                        self.show_point_count.setText(section.replace("Point Count:\n", ""))
+                    elif section.startswith("Azimuth:"):
+                        self.azimuth_result.setText(section.replace("Azimuth:\n", ""))
+                    elif section.startswith("Reverse Azimuth:"):
+                        self.reverse_azimuth_result.setText(section.replace("Reverse Azimuth:\n", ""))
+                    elif section.startswith("Height Difference:"):
+                        self.height_difference_result.setText(section.replace("Height Difference:\n", ""))
+                    elif section.startswith("Segment Length:"):
+                        self.segment_length_result.setText(section.replace("Segment Length:\n", ""))
+                    elif section.startswith("Surface Area:"):
+                        self.surface_area_result.setText(section.replace("Surface Area:\n", ""))
+                    # Extracting points and adding them to the map
+                    elif section.startswith("Coordinates of point"):
+                        lines = section.split("\n")
+                        points = []
+                        for line in lines:
+                            if line.startswith("Coordinates of point"):
+                                _, _, point_data = line.partition(": ")
+                                coords = point_data.split(", ")
+                                x, y = float(coords[0].split("=")[1]), float(coords[1].split("=")[1])
+                                points.append(QgsPointXY(x, y))
+                        if points:
+                            # Create a memory layer to hold the points
+                            vl = QgsVectorLayer("Point", "Points", "memory")
+                            pr = vl.dataProvider()
+                            # Add points to the layer
+                            for point in points:
+                                feat = QgsFeature()
+                                feat.setGeometry(QgsGeometry.fromPointXY(point))
+                                pr.addFeatures([feat])
+                            vl.updateExtents()
+                            # Add the layer to the map
+                            QgsProject.instance().addMapLayer(vl)
+    
+    def setupUi(self, Dialog):
+        """This method sets up the user interface and connects the buttons with their respective functions."""
+        # Please don't change the function header
+    
+        super().setupUi(Dialog)
+        self.mMapLayerComboBox_layers.setFilters(QgsMapLayerProxyModel.PointLayer)
+        self.mMapLayerComboBox_layers.layerChanged.connect(self.layer_changed)
+        self.close_button.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons/close.png")))
+    
+    def layer_changed(self, layer):
+        """Function called when the selected layer changes."""
+        if layer is None:
+            self.clear_data_function()
