@@ -93,19 +93,39 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
     def calculate_azimuth(self):
         if not self.check_current_layer():
             return None, None
-
+    
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
         num_elements = len(selected_features)
         if num_elements == 2:
             coords = self.extract_coordinates(selected_features)
             azimuth = atan2((coords[1][1] - coords[0][1]), (coords[1][0] - coords[0][0]))
-            azimuth, reverse_azimuth = self.convert_azimuth_units(azimuth)
-            self.azimuth_result.setText(f'Azimuth is(point id:1- id:2): {azimuth}')
-            self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth}')
+            
+            # Tutaj przekształcamy azymut na stopnie dziesiętne lub grady
+            if 'decimal degrees' == self.unit_azimuth.currentText():
+                azimuth *= 180 / pi
+                if azimuth < 0:
+                    azimuth += 360
+            elif 'grads' == self.unit_azimuth.currentText():
+                azimuth *= 200 / pi
+                if azimuth < 0:
+                    azimuth += 400
+            
+            # Obliczamy odwrotny azymut
+            reverse_azimuth = azimuth + 180 if azimuth >= 180 else azimuth - 180
+            
+            # Formatujemy wyniki
+            azimuth_text = f'Azimuth is (point id:1- id:2): {azimuth:.7f}[decimal degrees]' if 'decimal degrees' == self.unit_azimuth.currentText() else f'Azimuth is (point id:1- id:2): {azimuth:.4f}[grads]'
+            reverse_azimuth_text = f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.7f}[decimal degrees]' if 'decimal degrees' == self.unit_azimuth.currentText() else f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.4f}[grads]'
+            
+            # Aktualizujemy etykiety w interfejsie użytkownika
+            self.azimuth_result.setText(azimuth_text)
+            self.reverse_azimuth_result.setText(reverse_azimuth_text)
+            
             return azimuth, reverse_azimuth
         else:
             self.show_error_message("Error: Incorrect number of points selected")
             return None, None
+
 
     def azimuth_function(self):
         if not self.check_current_layer():
