@@ -249,13 +249,16 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 if distance is not None:
                     file.write(f'Distance between points (point id:1- id:2) is: {distance:.3f} [m]\n')
     
-                self.azimuth_function()  # Update: Replaced calculate_azimuth() with calculate_and_display_azimuth()
+                azimuth, reverse_azimuth = self.calculate_and_display_azimuth()  # Update: Added azimuth calculation
+                if azimuth is not None and reverse_azimuth is not None:
+                    file.write(f'Azimuth is (point id:1- id:2): {azimuth}\n')
+                    file.write(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth}\n')  # Update: Added azimuth to file
     
                 height_difference = self.height_difference_function()
                 if height_difference is not None:
                     file.write(f'Height difference: {height_difference:.3f}[m]\n')
     
-                self.area_function()  # Update: Replaced area with self.area_function()
+                self.area_function()
 
 
     def select_file_function(self):
