@@ -24,13 +24,14 @@
 
 import os
 from qgis.core import QgsVectorLayer, QgsProject
-from qgis.gui import QgsMapLayerProxyModel
+
 from math import atan2, sqrt, pi
 from qgis.utils import iface
 from qgis.PyQt import QtWidgets, uic
 from qgis.core import QgsFeature, QgsGeometry, QgsPointXY
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QIcon
+from qgis.gui import QgsMapLayerComboBox
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'wtyczkaoa_dialog_base.ui'))
@@ -280,11 +281,10 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         if filename is None:
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", "", "Text Files (*.txt);;All Files (*)")
             if not filename:
-                return  # User cancelled the save dialog
-        
-        azimuth_text = ""
-        reverse_azimuth_text = ""
-        area_text = ""
+                return  # User cancelled
+            azimuth_text = ""
+            reverse_azimuth_text = ""
+            area_text = ""
         
         try:
             with open(filename, "w") as file:
@@ -330,7 +330,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                     
         except Exception as e:
             self.show_error_message(f"Error saving file: {str(e)}")
-
+    
     def select_file_function(self):
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open File", "", "Text Files (*.txt);;All Files (*)")
         if filename:
@@ -381,7 +381,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         # Please don't change the function header
     
         super().setupUi(Dialog)
-        self.mMapLayerComboBox_layers.setFilters(QgsMapLayerProxyModel.PointLayer)
+        self.mMapLayerComboBox_layers.setFilters(QgsMapLayerComboBox.PointLayer)
         self.mMapLayerComboBox_layers.layerChanged.connect(self.layer_changed)
         self.close_button.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons/close.png")))
     
@@ -389,3 +389,4 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         """Function called when the selected layer changes."""
         if layer is None:
             self.clear_data_function()
+
