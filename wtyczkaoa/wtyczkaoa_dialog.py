@@ -23,14 +23,12 @@
 """
 
 import os
-from qgis.core import QgsVectorLayer, QgsProject
 from math import atan2, sqrt, pi
 from qgis.utils import iface
 from qgis.PyQt import QtWidgets, uic
 from qgis.core import QgsFeature, QgsGeometry, QgsPointXY
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtGui import QIcon
-from qgis.gui import QgsMapLayerComboBox
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'wtyczkaoa_dialog_base.ui'))
@@ -41,10 +39,6 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         """Constructor."""
         super(wtyczkaoaDialog, self).__init__(parent)
         self.setupUi(self)
-        # Utwórz obiekt QgsMapLayerComboBox
-        self.mMapLayerComboBox_layers = QgsMapLayerComboBox(self)
-        # Ustaw filtr na warstwy wektorowe
-        self.mMapLayerComboBox_layers.setFilters(QgsMapLayerComboBox.VectorLayer)
         self.height_difference.clicked.connect(self.height_difference_function)
         self.count_points.clicked.connect(self.count_elements)
         self.display_coordinates.clicked.connect(self.coordinates_function)
@@ -57,7 +51,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         self.save_file.clicked.connect(self.save_file_function)
         self.reverse_azimuth.clicked.connect(self.azimuth_function)
         self.load_file.clicked.connect(self.select_file_function)
-        
+
     def show_error_message(self, error_message):
         error_dialog = QMessageBox()
         error_dialog.setIcon(QMessageBox.Critical)
@@ -85,49 +79,25 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             return distance
         else:
             self.show_error_message("Error: Incorrect number of points selected")
-
     def extract_coordinates(self, selected_features):
         coords = []
         for feature in selected_features:
             wsp = feature.geometry().asPoint()
             coords.append([wsp.x(), wsp.y()])
         return coords
-    
-    def convert_azimuth_units(self, azimuth):
-        reverse_azimuth = azimuth + pi if azimuth < 0 else azimuth - pi
-        return azimuth, reverse_azimuth
-    
+
     def calculate_azimuth(self):
         if not self.check_current_layer():
             return None, None
-    
+
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
         num_elements = len(selected_features)
         if num_elements == 2:
             coords = self.extract_coordinates(selected_features)
             azimuth = atan2((coords[1][1] - coords[0][1]), (coords[1][0] - coords[0][0]))
-            
-            # Tutaj przekształcamy azymut na stopnie dziesiętne lub grady
-            if 'decimal degrees' == self.unit_azimuth.currentText():
-                azimuth *= 180 / pi
-                if azimuth < 0:
-                    azimuth += 360
-            elif 'grads' == self.unit_azimuth.currentText():
-                azimuth *= 200 / pi
-                if azimuth < 0:
-                    azimuth += 400
-            
-            # Obliczamy odwrotny azymut
-            reverse_azimuth = azimuth + 180 if azimuth >= 180 else azimuth - 180
-            
-            # Formatujemy wyniki
-            azimuth_text = f'Azimuth is (point id:1- id:2): {azimuth:.7f}[decimal degrees]' if 'decimal degrees' == self.unit_azimuth.currentText() else f'Azimuth is (point id:1- id:2): {azimuth:.4f}[grads]'
-            reverse_azimuth_text = f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.7f}[decimal degrees]' if 'decimal degrees' == self.unit_azimuth.currentText() else f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.4f}[grads]'
-            
-            # Aktualizujemy etykiety w interfejsie użytkownika
-            self.azimuth_result.setText(azimuth_text)
-            self.reverse_azimuth_result.setText(reverse_azimuth_text)
-            
+            azimuth, reverse_azimuth = self.convert_azimuth_units(azimuth)
+            self.azimuth_result.setText(f'Azimuth is(point id:1- id:2): {azimuth}')
+            self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth}')
             return azimuth, reverse_azimuth
         else:
             self.show_error_message("Error: Incorrect number of points selected")
@@ -136,11 +106,11 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
     def azimuth_function(self):
         if not self.check_current_layer():
             return
-        
+
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
         num_elements = len(selected_features)
         print(f"Number of selected elements: {num_elements}")  # Debugging
-        
+
         if num_elements == 2:
             K = []
             for element in selected_features:
@@ -149,36 +119,40 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 Y = wsp.y()
                 K.append([X, Y])
                 print(f"Point: X={X}, Y={Y}")  # Debugging
-            
+        
             Az = atan2((K[1][1] - K[0][1]), (K[1][0] - K[0][0]))
             print(f"Initial Azimuth (radians): {Az}")  # Debugging
-            
-            if 'decimal degrees' == self.unit_azimuth.currentText():
+        
+            if 'decimal_degrees' == self.unit_azimuth.currentText():
                 Az = Az * 180 / pi
                 if Az < 0:
                     Az += 360
                 elif Az > 360:
                     Az -= 360
-                self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {Az:.7f}[decimal degrees]')
-                print(f"Azimuth (decimal degrees): {Az}")  # Debugging
+                self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {Az:.7f}[decimal_degrees]')
+                print(f"Azimuth (decimal_degrees): {Az}")  # Debugging
             
                 Az_odw = Az + 180
-                if Az_odw >= 360:
+                if Az_odw < 0:
+                    Az_odw += 360
+                elif Az_odw > 360:
                     Az_odw -= 360
-                self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {Az_odw:.7f}[decimal degrees]')
-                print(f"Reverse Azimuth (decimal degrees): {Az_odw}")  # Debugging
+                self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {Az_odw:.7f}[decimal_degrees]')
+                print(f"Reverse Azimuth (decimal_degrees): {Az_odw}")  # Debugging
             
             elif 'grads' == self.unit_azimuth.currentText():
                 Az = Az * 200 / pi
                 if Az < 0:
                     Az += 400
-                elif Az >= 400:
+                elif Az > 400:
                     Az -= 400
                 self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {Az:.4f}[grads]')
                 print(f"Azimuth (grads): {Az}")  # Debugging
             
                 Az_odw = Az + 200
-                if Az_odw >= 400:
+                if Az_odw < 0:
+                    Az_odw += 400
+                elif Az_odw > 400:
                     Az_odw -= 400
                 self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {Az_odw:.4f}[grads]')
                 print(f"Reverse Azimuth (grads): {Az_odw}")  # Debugging
@@ -196,7 +170,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             return
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
         coords = ""
-        point_id = 0
+        point_id = 1
         for feature in selected_features:
             wsp = feature.geometry().asPoint()
             X = wsp.x()
@@ -214,7 +188,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             selected_layer = iface.activeLayer()
             selected_features = selected_layer.selectedFeatures()
             for feature in selected_features:
-                height = float(feature.geometry().z())
+                height = float(feature[20])
                 heights.append(height)
             height_difference = heights[1] - heights[0]
             self.height_difference_result.setText(f'Height difference {height_difference:.3f}[m]')
@@ -239,9 +213,9 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def area_function(self):
         if not self.check_current_layer():
-            return None
+            return
         num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
-        if num_elements >= 3:  # Zmieniono warunek na sprawdzenie przynajmniej trzech punktów
+        if num_elements >= 3:
             selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
             points = []
             for feature in selected_features:
@@ -256,17 +230,21 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             P = (points[-1][0] * (points[-2][1]))
             area_sum += P
             area_sum = 0.5 * abs(area_sum)
-            
-            # Zaktualizowano etykietę pola powierzchni w interfejsie użytkownika
-            self.surface_area_result.setText(f'Surface area: {area_sum:.3f} [m2]')
-            
-            # Zwracamy obliczoną powierzchnię
-            return area_sum
+        
+            if 'square_meters' == self.area_unit.currentText():
+                self.surface_area_result.setText(f'Surface area is: {area_sum:.3f} [m2]')
+            elif 'hectares' == self.area_unit.currentText():
+                area_sum = area_sum * 0.0001
+                self.surface_area_result.setText(f'Surface area is: {area_sum:.7f} [ha]')
+            elif 'ares' == self.area_unit.currentText():
+                area_sum = area_sum * 0.01
+                self.surface_area_result.setText(f'Surface area is: {area_sum:.5f} [a]')
+            elif 'square_kilometers' == self.area_unit.currentText():
+                area_sum = area_sum * 0.000001
+                self.surface_area_result.setText(f'Surface area is: {area_sum:.9f} [km2]')
         else:
             self.show_error_message("Error: Incorrect number of points selected")
-            return None
 
-        
     def clear_array_function(self):
         self.coordinates.clear()
         self.show_point_count.clear()
@@ -280,60 +258,40 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         self.clear_array_function()
         self.mMapLayerComboBox_layers.clear()
 
-    def save_file_function(self, filename=None):
-        if filename is None:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", "", "Text Files (*.txt);;All Files (*)")
-            if not filename:
-                return  # User cancelled
-            azimuth_text = ""
-            reverse_azimuth_text = ""
-            area_text = ""
-        
-        try:
+    def save_file_function(self):
+        filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", "", "Text Files (*.txt);;All Files (*)")
+        if filename:
             with open(filename, "w") as file:
                 selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
                 num_points = len(selected_features)
                 file.write(f'Number of selected points: {num_points}\n')
-                coordinates = []
-                iden = 0
+                coordinates = ""
+                point_id = 1
                 for feature in selected_features:
                     wsp = feature.geometry().asPoint()
                     X = wsp.x()
                     Y = wsp.y()
-                    coordinates.append([X, Y])
-                    iden += 1
-                    file.write(f"Coordinates of point number {iden}: X = {X:.3f}, Y = {Y:.3f}\n")
-        
-                num_elements = len(selected_features)
-                if num_elements == 2:
-                    distance = self.segment_length_function()
-                    file.write(f'Distance between points (point id:1- id:2) is: {distance:.3f} [m] \n')
-        
-                    azimuth, reverse_azimuth = self.calculate_azimuth()
-                    if azimuth is not None:
-                        if 'decimal degrees' == self.unit_azimuth.currentText():
-                            azimuth_text = f'Azimuth is (point id:1- id:2): {azimuth:.7f}[decimal degrees]'
-                            reverse_azimuth_text = f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.7f}[decimal degrees]'
-                        elif 'grads' == self.unit_azimuth.currentText():
-                            azimuth_text = f'Azimuth is (point id:1- id:2): {azimuth:.4f}[grads]'
-                            reverse_azimuth_text = f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.4f}[grads]'
-                
-                elif num_elements == 3:
-                    area = self.area_function()
-                    if area is not None:
-                        area_text = f'Surface area is: {area:.3f} [m2]'
-                    
-                file.write(azimuth_text + '\n')
-                file.write(reverse_azimuth_text + '\n')
-                file.write(area_text + '\n')
-            
+                    coordinates += f"Coordinates of point number {point_id}: X = {X:.3f}, Y = {Y:.3f}\n"
+                    point_id += 1
+                file.write(coordinates)
+
+                distance = self.segment_length_function()
+                if distance is not None:
+                    file.write(f'Distance between points (point id:1- id:2) is: {distance:.3f} [m]\n')
+
+                azimuth, reverse_azimuth = self.calculate_azimuth()
+                if azimuth is not None and reverse_azimuth is not None:
+                    file.write(f'Azimuth is (point id:1- id:2): {azimuth}\n')
+                    file.write(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth}\n')
+
                 height_difference = self.height_difference_function()
                 if height_difference is not None:
                     file.write(f'Height difference: {height_difference:.3f}[m]\n')
-                    
-        except Exception as e:
-            self.show_error_message(f"Error saving file: {str(e)}")
-    
+
+                area = self.area_function()
+                if area is not None:
+                    file.write(f'Surface area: {area}\n')
+
     def select_file_function(self):
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open File", "", "Text Files (*.txt);;All Files (*)")
         if filename:
@@ -356,40 +314,8 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                         self.segment_length_result.setText(section.replace("Segment Length:\n", ""))
                     elif section.startswith("Surface Area:"):
                         self.surface_area_result.setText(section.replace("Surface Area:\n", ""))
-                    # Extracting points and adding them to the map
-                    elif section.startswith("Coordinates of point"):
-                        lines = section.split("\n")
-                        points = []
-                        for line in lines:
-                            if line.startswith("Coordinates of point"):
-                                _, _, point_data = line.partition(": ")
-                                coords = point_data.split(", ")
-                                x, y = float(coords[0].split("=")[1]), float(coords[1].split("=")[1])
-                                points.append(QgsPointXY(x, y))
-                        if points:
-                            # Create a memory layer to hold the points
-                            vl = QgsVectorLayer("Point", "Points", "memory")
-                            pr = vl.dataProvider()
-                            # Add points to the layer
-                            for point in points:
-                                feat = QgsFeature()
-                                feat.setGeometry(QgsGeometry.fromPointXY(point))
-                                pr.addFeatures([feat])
-                            vl.updateExtents()
-                            # Add the layer to the map
-                            QgsProject.instance().addMapLayer(vl)
-    
-    def setupUi(self, Dialog):
-        """This method sets up the user interface and connects the buttons with their respective functions."""
-        # Please don't change the function header
-    
-        super().setupUi(Dialog)
-        self.mMapLayerComboBox_layers.setFilters(QgsMapLayerComboBox.PointLayer)
-        self.mMapLayerComboBox_layers.layerChanged.connect(self.layer_changed)
-        self.close_button.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "icons/close.png")))
-    
-    def layer_changed(self, layer):
-        """Function called when the selected layer changes."""
-        if layer is None:
-            self.clear_data_function()
 
+
+def run():
+    dialog = wtyczkaoaDialog()
+    dialog.show()
