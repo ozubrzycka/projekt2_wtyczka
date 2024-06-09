@@ -87,7 +87,8 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         return coords
 
     def calculate_azimuth(self, selected_features):
-        if len(selected_features) == 2:
+        num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
+        if num_elements == 2:
             coords = self.extract_coordinates(selected_features)
             azimuth = atan2((coords[1][1] - coords[0][1]), (coords[1][0] - coords[0][0]))
             return azimuth
