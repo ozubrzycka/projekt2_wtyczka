@@ -131,12 +131,12 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
     def azimuth_function(self):
         if not self.check_current_layer():
             return
-
+    
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
         num_elements = len(selected_features)
         print(f"Number of selected elements: {num_elements}")  # Debugging
-
-        if num_elements == 1:
+    
+        if num_elements == 2:
             K = []
             for element in selected_features:
                 wsp = element.geometry().asPoint()
@@ -144,45 +144,45 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 Y = wsp.y()
                 K.append([X, Y])
                 print(f"Point: X={X}, Y={Y}")  # Debugging
-        
+            
             Az = atan2((K[1][1] - K[0][1]), (K[1][0] - K[0][0]))
             print(f"Initial Azimuth (radians): {Az}")  # Debugging
-        
-            if 'decimal_degrees' == self.unit_azimuth.currentText():
+            
+            if 'decimal degrees' == self.unit_azimuth.currentText():
                 Az = Az * 180 / pi
                 if Az < 0:
                     Az += 360
                 elif Az > 360:
                     Az -= 360
-                self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {Az:.7f}[decimal_degrees]')
-                print(f"Azimuth (decimal_degrees): {Az}")  # Debugging
+                self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {Az:.7f}[decimal degrees]')
+                print(f"Azimuth (decimal degrees): {Az}")  # Debugging
             
                 Az_odw = Az + 180
                 if Az_odw < 0:
                     Az_odw += 360
                 elif Az_odw > 360:
                     Az_odw -= 360
-                self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {Az_odw:.7f}[decimal_degrees]')
-                print(f"Reverse Azimuth (decimal_degrees): {Az_odw}")  # Debugging
-            
-            elif 'grads' == self.unit_azimuth.currentText():
-                Az = Az * 200 / pi
-                if Az < 0:
-                    Az += 400
-                elif Az > 400:
-                    Az -= 400
-                self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {Az:.4f}[grads]')
-                print(f"Azimuth (grads): {Az}")  # Debugging
-            
-                Az_odw = Az + 200
-                if Az_odw < 0:
-                    Az_odw += 400
-                elif Az_odw > 400:
-                    Az_odw -= 400
-                self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {Az_odw:.4f}[grads]')
-                print(f"Reverse Azimuth (grads): {Az_odw}")  # Debugging
-        else:
-            self.show_error_message("Error: Incorrect number of points selected")
+                self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {Az_odw:.7f}[decimal degrees]')
+                print(f"Reverse Azimuth (decimal degrees): {Az_odw}")  # Debugging
+        
+        elif 'grads' == self.unit_azimuth.currentText():
+            Az = Az * 200 / pi
+            if Az < 0:
+                Az += 400
+            elif Az > 400:
+                Az -= 400
+            self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {Az:.4f}[grads]')
+            print(f"Azimuth (grads): {Az}")  # Debugging
+        
+            Az_odw = Az + 200
+            if Az_odw < 0:
+                Az_odw += 400
+            elif Az_odw > 400:
+                Az_odw -= 400
+            self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {Az_odw:.4f}[grads]')
+            print(f"Reverse Azimuth (grads): {Az_odw}")  # Debugging
+    else:
+        self.show_error_message("Error: Incorrect number of points selected")
 
     def count_elements(self):
         if not self.check_current_layer():
@@ -236,31 +236,35 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         sorted_points = sorted(points, key=lambda p: self.get_angle(p, centroid))
         return sorted_points
 
-    def area_function(self):
-        if not self.check_current_layer():
-            return None
-        num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
-        if num_elements >= 2:
-            selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
-            points = []
-            for feature in selected_features:
-                point = feature.geometry().asPoint()
-                points.append([point.x(), point.y()])
-            points = self.sort_points(points)
-            area_sum = 0
-            for i in range(len(points)):
-                if i < len(points) - 1:
-                    P = (points[i][0] * (points[i + 1][1] - points[i - 1][1]))
-                    area_sum += P
-            P = (points[-1][0] * (points[-2][1]))
-            area_sum += P
-            area_sum = 0.5 * abs(area_sum)
-            
-            # Zwracamy obliczoną powierzchnię
-            return area_sum
-        else:
-            self.show_error_message("Error: Incorrect number of points selected")
-            return None
+        def area_function(self):
+            if not self.check_current_layer():
+                return None
+            num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
+            if num_elements >= 3:  # Zmieniono warunek na sprawdzenie przynajmniej trzech punktów
+                selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
+                points = []
+                for feature in selected_features:
+                    point = feature.geometry().asPoint()
+                    points.append([point.x(), point.y()])
+                points = self.sort_points(points)
+                area_sum = 0
+                for i in range(len(points)):
+                    if i < len(points) - 1:
+                        P = (points[i][0] * (points[i + 1][1] - points[i - 1][1]))
+                        area_sum += P
+                P = (points[-1][0] * (points[-2][1]))
+                area_sum += P
+                area_sum = 0.5 * abs(area_sum)
+                
+                # Zaktualizowano etykietę pola powierzchni w interfejsie użytkownika
+                self.surface_area_result.setText(f'Surface area: {area_sum:.3f} [m2]')
+                
+                # Zwracamy obliczoną powierzchnię
+                return area_sum
+            else:
+                self.show_error_message("Error: Incorrect number of points selected")
+                return None
+
         
     def clear_array_function(self):
         self.coordinates.clear()
@@ -278,6 +282,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
     def save_file_function(self, filename):
         azimuth_text = ""
         reverse_azimuth_text = ""
+        area_text = ""
         
         with open(filename, "w") as file:
             selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
@@ -292,7 +297,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 coordinates.append([X, Y])
                 iden += 1
                 file.write(f"Coordinates of point number {iden}: X = {X:.3f}, Y = {Y:.3f}\n")
-    
+        
             num_elements = len(selected_features)
             if num_elements == 2:
                 distance = self.segment_length_function()
@@ -306,16 +311,16 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                     elif 'grads' == self.unit_azimuth.currentText():
                         azimuth_text = f'Azimuth is (point id:1- id:2): {azimuth:.4f}[grads]'
                         reverse_azimuth_text = f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.4f}[grads]'
-    
+            
             elif num_elements == 3:
                 area = self.area_function()
                 if area is not None:
-                    # Zapisujemy obliczoną powierzchnię do pliku
-                    file.write(f'Surface area is: {area:.3f} [m2]\n')
-    
+                    area_text = f'Surface area is: {area:.3f} [m2]'
+                
             file.write(azimuth_text + '\n')
             file.write(reverse_azimuth_text + '\n')
-    
+            file.write(area_text + '\n')
+        
             height_difference = self.height_difference_function()
             if height_difference is not None:
                 file.write(f'Height difference: {height_difference:.3f}[m]\n')
