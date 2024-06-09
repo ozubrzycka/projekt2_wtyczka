@@ -86,78 +86,48 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             coords.append([wsp.x(), wsp.y()])
         return coords
 
-    def calculate_azimuth(self):
-        if not self.check_current_layer():
-            return None, None
-
-        selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
-        num_elements = len(selected_features)
-        if num_elements == 2:
-            coords = self.extract_coordinates(selected_features)
-            azimuth = atan2((coords[1][1] - coords[0][1]), (coords[1][0] - coords[0][0]))
-            azimuth, reverse_azimuth = self.convert_azimuth_units(azimuth)
-            self.azimuth_result.setText(f'Azimuth is(point id:1- id:2): {azimuth}')
-            self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth}')
-            return azimuth, reverse_azimuth
-        else:
-            self.show_error_message("Error: Incorrect number of points selected")
-            return None, None
-
     def azimuth_function(self):
         if not self.check_current_layer():
             return
-
+    
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
         num_elements = len(selected_features)
         print(f"Number of selected elements: {num_elements}")  # Debugging
-
+    
         if num_elements == 2:
-            K = []
-            for element in selected_features:
-                wsp = element.geometry().asPoint()
-                X = wsp.x()
-                Y = wsp.y()
-                K.append([X, Y])
-                print(f"Point: X={X}, Y={Y}")  # Debugging
-        
-            Az = atan2((K[1][1] - K[0][1]), (K[1][0] - K[0][0]))
-            print(f"Initial Azimuth (radians): {Az}")  # Debugging
-        
+            coords = self.extract_coordinates(selected_features)
+            azimuth = atan2((coords[1][1] - coords[0][1]), (coords[1][0] - coords[0][0]))
+            print(f"Initial Azimuth (radians): {azimuth}")  # Debugging
+    
             if 'decimal_degrees' == self.unit_azimuth.currentText():
-                Az = Az * 180 / pi
-                if Az < 0:
-                    Az += 360
-                elif Az > 360:
-                    Az -= 360
-                self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {Az:.7f}[decimal_degrees]')
-                print(f"Azimuth (decimal_degrees): {Az}")  # Debugging
-            
-                Az_odw = Az + 180
-                if Az_odw < 0:
-                    Az_odw += 360
-                elif Az_odw > 360:
-                    Az_odw -= 360
-                self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {Az_odw:.7f}[decimal_degrees]')
-                print(f"Reverse Azimuth (decimal_degrees): {Az_odw}")  # Debugging
-            
-            elif 'grads' == self.unit_azimuth.currentText():
-                Az = Az * 200 / pi
-                if Az < 0:
-                    Az += 400
-                elif Az > 400:
-                    Az -= 400
-                self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {Az:.4f}[grads]')
-                print(f"Azimuth (grads): {Az}")  # Debugging
-            
-                Az_odw = Az + 200
-                if Az_odw < 0:
-                    Az_odw += 400
-                elif Az_odw > 400:
-                    Az_odw -= 400
-                self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {Az_odw:.4f}[grads]')
-                print(f"Reverse Azimuth (grads): {Az_odw}")  # Debugging
-        else:
-            self.show_error_message("Error: Incorrect number of points selected")
+                azimuth_degrees = azimuth * 180 / pi
+                if azimuth_degrees < 0:
+                    azimuth_degrees += 360
+                elif azimuth_degrees > 360:
+                    azimuth_degrees -= 360
+                reverse_azimuth_degrees = azimuth_degrees + 180
+                if reverse_azimuth_degrees < 0:
+                    reverse_azimuth_degrees += 360
+                elif reverse_azimuth_degrees > 360:
+                    reverse_azimuth_degrees -= 360
+                self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {azimuth_degrees:.7f}[decimal_degrees]')
+                self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth_degrees:.7f}[decimal_degrees]')
+
+        elif 'grads' == self.unit_azimuth.currentText():
+            azimuth_grads = azimuth * 200 / pi
+            if azimuth_grads < 0:
+                azimuth_grads += 400
+            elif azimuth_grads > 400:
+                azimuth_grads -= 400
+            reverse_azimuth_grads = azimuth_grads + 200
+            if reverse_azimuth_grads < 0:
+                reverse_azimuth_grads += 400
+            elif reverse_azimuth_grads > 400:
+                reverse_azimuth_grads -= 400
+            self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {azimuth_grads:.4f}[grads]')
+            self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth_grads:.4f}[grads]')
+    else:
+        self.show_error_message("Error: Incorrect number of points selected")
 
     def count_elements(self):
         if not self.check_current_layer():
