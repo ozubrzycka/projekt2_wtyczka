@@ -283,6 +283,9 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         self.mMapLayerComboBox_layers.clear()
 
     def save_file_function(self):
+        azimuth_text = ""
+        reverse_azimuth_text = ""
+        
         with open("Result_File_Plugin_Alicja_Oliwia.txt", "w") as file:
             selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
             num_points = len(selected_features)
@@ -300,36 +303,27 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             num_elements = len(selected_features)
             if num_elements == 2:
                 distance = self.segment_length_function()
-                file.write(f'Distance between points (point id:1- id:2) is: {distance:.3f} [m]\n')
-            elif num_elements < 2:
-                file.write("Distance between points: Too few points selected\n")
-            elif num_elements > 2:
-                file.write("Distance between points: Too many points selected\n")
+                file.write(f'Distance between points (point id:1- id:2) is: {distance:.3f} [m] \n')
     
-            azimuth, reverse_azimuth = self.calculate_azimuth()
-            if azimuth is not None and reverse_azimuth is not None:
-                if 'decimal degrees' == self.unit_azimuth.currentText():
-                    azimuth_text = f'Azimuth is (point id:1- id:2): {azimuth:.7f}[decimal degrees]'
-                    reverse_azimuth_text = f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.7f}[decimal degrees]'
-                elif 'grads' == self.unit_azimuth.currentText():
-                    azimuth_text = f'Azimuth is (point id:1- id:2): {azimuth:.4f}[grads]'
-                    reverse_azimuth_text = f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.4f}[grads]'
-                file.write(azimuth_text + '\n')
-                file.write(reverse_azimuth_text + '\n')
-            else:
-                file.write("Azimuth calculation error\n")
+                azimuth, reverse_azimuth = self.calculate_azimuth()
+                if azimuth is not None:
+                    if 'decimal degrees' == self.unit_azimuth.currentText():
+                        azimuth_text = f'Azimuth is (point id:1- id:2): {azimuth:.7f}[decimal degrees]'
+                        reverse_azimuth_text = f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.7f}[decimal degrees]'
+                    elif 'grads' == self.unit_azimuth.currentText():
+                        azimuth_text = f'Azimuth is (point id:1- id:2): {azimuth:.4f}[grads]'
+                        reverse_azimuth_text = f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.4f}[grads]'
+    
+            elif num_elements == 3:
+                area = self.area_function()
+                if area is not None:
+                    file.write(area + '\n')
+    
+            file.write(azimuth_text + '\n')
+            file.write(reverse_azimuth_text + '\n')
     
             height_difference = self.height_difference_function()
-            if height_difference is not None:
-                file.write(f'Height difference: {height_difference:.3f} [m]\n')
-            else:
-                file.write("Height difference calculation error\n")
     
-            area = self.area_function()
-            if area is not None:
-                file.write(f'Area: {area:.3f} [m2]\n')
-            else:
-                file.write("Area calculation error\n")
 
 
 
