@@ -88,46 +88,52 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def azimuth_function(self):
         if not self.check_current_layer():
-            return
+            return None, None  # Zwraca None dla azymutów w przypadku braku warstwy
     
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
         num_elements = len(selected_features)
         print(f"Number of selected elements: {num_elements}")  # Debugging
     
         if num_elements == 2:
-            coords = self.extract_coordinates(selected_features)
-            azimuth = atan2((coords[1][1] - coords[0][1]), (coords[1][0] - coords[0][0]))
-            print(f"Initial Azimuth (radians): {azimuth}")  # Debugging
-    
+            K = []
+            for element in selected_features:
+                wsp = element.geometry().asPoint()
+                X = wsp.x()
+                Y = wsp.y()
+                K.append([X, Y])
+                print(f"Point: X={X}, Y={Y}")  # Debugging
+        
+            Az = atan2((K[1][1] - K[0][1]), (K[1][0] - K[0][0]))
+            print(f"Initial Azimuth (radians): {Az}")  # Debugging
+        
             if 'decimal_degrees' == self.unit_azimuth.currentText():
-                azimuth_degrees = azimuth * 180 / pi
-                if azimuth_degrees < 0:
-                    azimuth_degrees += 360
-                elif azimuth_degrees > 360:
-                    azimuth_degrees -= 360
-                reverse_azimuth_degrees = azimuth_degrees + 180
-                if reverse_azimuth_degrees < 0:
-                    reverse_azimuth_degrees += 360
-                elif reverse_azimuth_degrees > 360:
-                    reverse_azimuth_degrees -= 360
-                self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {azimuth_degrees:.7f}[decimal_degrees]')
-                self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth_degrees:.7f}[decimal_degrees]')
-
+                Az = Az * 180 / pi
+                if Az < 0:
+                    Az += 360
+                elif Az > 360:
+                    Az -= 360
+                Az_odw = Az + 180
+                if Az_odw < 0:
+                    Az_odw += 360
+                elif Az_odw > 360:
+                    Az_odw -= 360
             elif 'grads' == self.unit_azimuth.currentText():
-                azimuth_grads = azimuth * 200 / pi
-                if azimuth_grads < 0:
-                    azimuth_grads += 400
-                elif azimuth_grads > 400:
-                    azimuth_grads -= 400
-                reverse_azimuth_grads = azimuth_grads + 200
-                if reverse_azimuth_grads < 0:
-                    reverse_azimuth_grads += 400
-                elif reverse_azimuth_grads > 400:
-                    reverse_azimuth_grads -= 400
-                self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {azimuth_grads:.4f}[grads]')
-                self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth_grads:.4f}[grads]')
+                Az = Az * 200 / pi
+                if Az < 0:
+                    Az += 400
+                elif Az > 400:
+                    Az -= 400
+                Az_odw = Az + 200
+                if Az_odw < 0:
+                    Az_odw += 400
+                elif Az_odw > 400:
+                    Az_odw -= 400
+    
+            # Zwraca obliczone azymuty
+            return Az, Az_odw
         else:
             self.show_error_message("Error: Incorrect number of points selected")
+            return None, None  # Zwraca None dla azymutów w przypadku niepoprawnej liczby punktów
 
     def count_elements(self):
         if not self.check_current_layer():
@@ -252,7 +258,11 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 azimuth, reverse_azimuth = self.azimuth_function()  # Update: Added azimuth calculation
                 if azimuth is not None and reverse_azimuth is not None:
                     file.write(f'Azimuth is (point id:1- id:2): {azimuth}\n')
-                    file.write(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth}\n')  # Update: Added azimuth to file
+                    file.write(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth}\n')
+                elif azimuth is None:
+                    file.write('Azimuth is (point id:1- id:2): Not available\n')
+                elif reverse_azimuth is None:
+                    file.write('Reverse azimuth is (point id:2- id:1): Not available\n')
     
                 height_difference = self.height_difference_function()
                 if height_difference is not None:
