@@ -126,8 +126,8 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 reverse_azimuth_grads -= 400
             self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {azimuth_grads:.4f}[grads]')
             self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth_grads:.4f}[grads]')
-    else:
-        self.show_error_message("Error: Incorrect number of points selected")
+        else:
+            self.show_error_message("Error: Incorrect number of points selected")
 
     def count_elements(self):
         if not self.check_current_layer():
