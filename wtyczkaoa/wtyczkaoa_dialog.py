@@ -105,7 +105,10 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
     def azimuth_function(self):
         if not self.check_current_layer():
             return
+    
         num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
+        print(f"Number of selected elements: {num_elements}")  # Debugging
+    
         if num_elements == 2:
             selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
             K = []
@@ -114,7 +117,11 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 X = wsp.x()
                 Y = wsp.y()
                 K.append([X, Y])
+                print(f"Point: X={X}, Y={Y}")  # Debugging
+        
             Az = atan2((K[1][1] - K[0][1]), (K[1][0] - K[0][0]))
+            print(f"Initial Azimuth (radians): {Az}")  # Debugging
+        
             if 'decimal_degrees' == self.unit_azimuth.currentText():
                 Az = Az * 180 / pi
                 if Az < 0:
@@ -122,12 +129,16 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 elif Az > 360:
                     Az -= 360
                 self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {Az:.7f}[decimal_degrees]')
+                print(f"Azimuth (decimal_degrees): {Az}")  # Debugging
+            
                 Az_odw = Az + 180
                 if Az_odw < 0:
                     Az_odw += 360
                 elif Az_odw > 360:
                     Az_odw -= 360
                 self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {Az_odw:.7f}[decimal_degrees]')
+                print(f"Reverse Azimuth (decimal_degrees): {Az_odw}")  # Debugging
+            
             elif 'grads' == self.unit_azimuth.currentText():
                 Az = Az * 200 / pi
                 if Az < 0:
@@ -135,12 +146,15 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 elif Az > 400:
                     Az -= 400
                 self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {Az:.4f}[grads]')
+                print(f"Azimuth (grads): {Az}")  # Debugging
+            
                 Az_odw = Az + 200
                 if Az_odw < 0:
                     Az_odw += 400
                 elif Az_odw > 400:
                     Az_odw -= 400
-                self.reverse_azimuth_result.setText(f'Reverse azimuth is(point id:2- id:1): {Az_odw:.4f}[grads]')
+                self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {Az_odw:.4f}[grads]')
+                print(f"Reverse Azimuth (grads): {Az_odw}")  # Debugging
         else:
             self.show_error_message("Error: Incorrect number of points selected")
 
@@ -244,24 +258,49 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         self.mMapLayerComboBox_layers.clear()
 
     def save_file_function(self):
-        filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save File", "", "Text Files (*.txt);;All Files (*)")
-        if filename:
-            with open(filename, 'w') as file:
-                file.write("Coordinates:\n")
-                file.write(self.coordinates.toPlainText())
-                file.write("\nPoint Count:\n")
-                file.write(self.show_point_count.text())
-                file.write("\nAzimuth:\n")
-                file.write(self.azimuth_result.text())
-                file.write("\nReverse Azimuth:\n")
-                file.write(self.reverse_azimuth_result.text())
-                file.write("\nHeight Difference:\n")
-                file.write(self.height_difference_result.text())
-                file.write("\nSegment Length:\n")
-                file.write(self.segment_length_result.text())
-                file.write("\nSurface Area:\n")
-                file.write(self.surface_area_result.text())
-
+        with open("Result_File_Plugin_Alicja_Oliwia.txt", "w") as file:
+            selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
+            num_points = len(selected_features)
+            file.write(f'Number of selected points: {num_points}\n')
+            coordinates = []
+            iden = 0
+            for feature in selected_features:
+                wsp = feature.geometry().asPoint()
+                X = wsp.x()
+                Y = wsp.y()
+                coordinates.append([X, Y])
+                iden += 1
+                file.write(f"Coordinates of point number {iden}: X = {X:.3f}, Y = {Y:.3f}\n")
+        
+            num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
+            if num_elements == 2:
+                distance = self.segment_length_function()
+                file.write(f'Distance between points (point id:1- id:2) is: {distance:.3f} [m] \n')
+            elif num_elements < 2:
+                file.write(f"Distance between points: Too few points selected\n ")
+            elif num_elements > 2:
+                file.write(f"Distance between points: Too many points selected\n")
+        
+            if num_elements >= 3:
+                azimuth, reverse_azimuth = self.calculate_azimuth()
+                if 'decimal degrees' == self.unit_azimuth.currentText():
+                    azimuth_text = f'Azimuth is (point id:1- id:2): {azimuth:.7f}[decimal degrees]'
+                    reverse_azimuth_text = f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.7f}[decimal degrees]'
+                elif 'grads' == self.unit_azimuth.currentText():
+                    azimuth_text = f'Azimuth is (point id:1- id:2): {azimuth:.4f}[grads]'
+                    reverse_azimuth_text = f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth:.4f}[grads]'
+                file.write(azimuth_text + '\n')
+                file.write(reverse_azimuth_text + '\n')
+            
+                height_difference = self.height_difference_function()
+                area = self.area_function()
+            
+                file.write(self.coordinates.text() + '\n')  # Poprawione użycie QLabel
+            else:
+                file.write(f"Azimuth is: Too few points selected\n")
+                file.write(f"Height difference: Too few points selected\n")
+                file.write(f"Surface area is: Too few points selected\n")
+                
     def select_file_function(self):
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open File", "", "Text Files (*.txt);;All Files (*)")
         if filename:
