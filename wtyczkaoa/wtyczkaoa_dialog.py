@@ -41,7 +41,10 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         """Constructor."""
         super(wtyczkaoaDialog, self).__init__(parent)
         self.setupUi(self)
+        # Utwórz obiekt QgsMapLayerComboBox
         self.mMapLayerComboBox_layers = QgsMapLayerComboBox(self)
+        # Ustaw filtr na warstwy wektorowe
+        self.mMapLayerComboBox_layers.setFilters(QgsMapLayerComboBox.VectorLayer)
         self.height_difference.clicked.connect(self.height_difference_function)
         self.count_points.clicked.connect(self.count_elements)
         self.display_coordinates.clicked.connect(self.coordinates_function)
