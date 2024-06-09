@@ -77,8 +77,13 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             distance = sqrt((points[0][0] - points[1][0])**2 + (points[0][1] - points[1][1])**2)
             self.segment_length_result.setText(f'Distance between points (point id:1- id:2) is: {distance:.3f} [m]')
             return distance
-        else:
-            self.show_error_message("Error: Incorrect number of points selected")
+        elif num_elements < 2:
+            self.height_difference_result.setText("Error")
+            self.show_error_message("Too few points selected")
+        elif num_elements > 2:
+            self.height_difference_result.setText("Error")
+            self.show_error_message("Too many points selected")
+            
     def extract_coordinates(self, selected_features):
         coords = []
         for feature in selected_features:
@@ -126,8 +131,12 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                     reverse_azimuth_grads -= 400
                 self.azimuth_result.setText(f'Azimuth is (point id:1- id:2): {azimuth_grads:.4f}[grads]')
                 self.reverse_azimuth_result.setText(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth_grads:.4f}[grads]')
-        else:
-            self.show_error_message("Error: Incorrect number of points selected")
+            elif num_elements < 2:
+                self.height_difference_result.setText("Error")
+                self.show_error_message("Too few points selected")
+            elif num_elements > 2:
+                self.height_difference_result.setText("Error")
+                self.show_error_message("Too many points selected")
 
     def count_elements(self):
         if not self.check_current_layer():
