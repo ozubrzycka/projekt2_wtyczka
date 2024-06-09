@@ -79,6 +79,12 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             return distance
         else:
             self.show_error_message("Error: Incorrect number of points selected")
+    def extract_coordinates(self, selected_features):
+        coords = []
+        for feature in selected_features:
+            wsp = feature.geometry().asPoint()
+            coords.append([wsp.x(), wsp.y()])
+        return coords
 
     def calculate_azimuth(self):
         if not self.check_current_layer():
