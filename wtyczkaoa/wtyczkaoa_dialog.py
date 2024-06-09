@@ -203,7 +203,15 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             return
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
         if len(selected_features) == 2:
-            heights = [feature.geometry().z() for feature in selected_features]
+            heights = []
+            for feature in selected_features:
+                geometry = feature.geometry()
+                if geometry.isMultipart():
+                    parts = geometry.asMultiPoint()
+                    heights.append(parts[0].z())
+                else:
+                    point = geometry.asPoint()
+                    heights.append(point.z())
             height_diff = abs(heights[1] - heights[0])
             self.height_difference_result.setText(f'Height difference: {height_diff:.3f} [m]')
             return height_diff
