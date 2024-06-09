@@ -45,11 +45,11 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         self.area.clicked.connect(self.area_function)
         self.clear_table.clicked.connect(self.clear_array_function)
         self.close_button.clicked.connect(self.clear_data_function)
-        self.azimuth.clicked.connect(self.azimuth_function)
+        self.azimuth.clicked.connect(self.calculate_azimuth)
         self.segment_length.clicked.connect(self.segment_length_function)
         self.reset_all.clicked.connect(self.clear_data_function)
         self.save_file.clicked.connect(self.save_file_function)
-        self.reverse_azimuth.clicked.connect(self.azimuth_function)
+        self.reverse_azimuth.clicked.connect(self.calculate_reverse_azimuth)
         self.load_file.clicked.connect(self.select_file_function)
 
     def show_error_message(self, error_message):
@@ -86,55 +86,26 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             coords.append([wsp.x(), wsp.y()])
         return coords
 
-    def azimuth_function(self):
-        if not self.check_current_layer():
-            return None, None  # Zwraca None dla azymutów w przypadku braku warstwy
-    
-        selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
-        num_elements = len(selected_features)
-        print(f"Number of selected elements: {num_elements}")  # Debugging
-    
-        if num_elements == 2:
-            K = []
-            for element in selected_features:
-                wsp = element.geometry().asPoint()
-                X = wsp.x()
-                Y = wsp.y()
-                K.append([X, Y])
-                print(f"Point: X={X}, Y={Y}")  # Debugging
-        
-            Az = atan2((K[1][1] - K[0][1]), (K[1][0] - K[0][0]))
-            print(f"Initial Azimuth (radians): {Az}")  # Debugging
-        
-            if 'decimal_degrees' == self.unit_azimuth.currentText():
-                Az = Az * 180 / pi
-                if Az < 0:
-                    Az += 360
-                elif Az > 360:
-                    Az -= 360
-                Az_odw = Az + 180
-                if Az_odw < 0:
-                    Az_odw += 360
-                elif Az_odw > 360:
-                    Az_odw -= 360
-            elif 'grads' == self.unit_azimuth.currentText():
-                Az = Az * 200 / pi
-                if Az < 0:
-                    Az += 400
-                elif Az > 400:
-                    Az -= 400
-                Az_odw = Az + 200
-                if Az_odw < 0:
-                    Az_odw += 400
-                elif Az_odw > 400:
-                    Az_odw -= 400
-    
-            # Zwraca obliczone azymuty
-            return Az, Az_odw
+    def calculate_azimuth(self, selected_features):
+        if len(selected_features) == 2:
+            coords = self.extract_coordinates(selected_features)
+            azimuth = atan2((coords[1][1] - coords[0][1]), (coords[1][0] - coords[0][0]))
+            return azimuth
         else:
-            self.show_error_message("Error: Incorrect number of points selected")
-            return None, None  # Zwraca None dla azymutów w przypadku niepoprawnej liczby punktów
+            return None
 
+    def calculate_reverse_azimuth(self, azimuth):
+        if azimuth is not None:
+            if 'decimal_degrees' == self.unit_azimuth.currentText():
+                azimuth_degrees = azimuth * 180 / pi
+                reverse_azimuth_degrees = (azimuth_degrees + 180) % 360
+                return reverse_azimuth_degrees
+            elif 'grads' == self.unit_azimuth.currentText():
+                azimuth_grads = azimuth * 200 / pi
+                reverse_azimuth_grads = (azimuth_grads + 200) % 400
+                return reverse_azimuth_grads
+        else:
+            return None
     def count_elements(self):
         if not self.check_current_layer():
             return
@@ -255,21 +226,17 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 if distance is not None:
                     file.write(f'Distance between points (point id:1- id:2) is: {distance:.3f} [m]\n')
     
-                azimuth, reverse_azimuth = self.azimuth_function()  # Update: Added azimuth calculation
+                azimuth = self.calculate_azimuth(selected_features)
+                reverse_azimuth = self.calculate_reverse_azimuth(azimuth)
                 if azimuth is not None and reverse_azimuth is not None:
                     file.write(f'Azimuth is (point id:1- id:2): {azimuth}\n')
                     file.write(f'Reverse azimuth is (point id:2- id:1): {reverse_azimuth}\n')
-                elif azimuth is None:
-                    file.write('Azimuth is (point id:1- id:2): Not available\n')
-                elif reverse_azimuth is None:
-                    file.write('Reverse azimuth is (point id:2- id:1): Not available\n')
     
                 height_difference = self.height_difference_function()
                 if height_difference is not None:
                     file.write(f'Height difference: {height_difference:.3f}[m]\n')
     
                 self.area_function()
-
 
     def select_file_function(self):
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open File", "", "Text Files (*.txt);;All Files (*)")
