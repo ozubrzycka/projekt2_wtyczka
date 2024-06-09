@@ -236,34 +236,34 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         sorted_points = sorted(points, key=lambda p: self.get_angle(p, centroid))
         return sorted_points
 
-        def area_function(self):
-            if not self.check_current_layer():
-                return None
-            num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
-            if num_elements >= 3:  # Zmieniono warunek na sprawdzenie przynajmniej trzech punktów
-                selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
-                points = []
-                for feature in selected_features:
-                    point = feature.geometry().asPoint()
-                    points.append([point.x(), point.y()])
-                points = self.sort_points(points)
-                area_sum = 0
-                for i in range(len(points)):
-                    if i < len(points) - 1:
-                        P = (points[i][0] * (points[i + 1][1] - points[i - 1][1]))
-                        area_sum += P
-                P = (points[-1][0] * (points[-2][1]))
-                area_sum += P
-                area_sum = 0.5 * abs(area_sum)
-                
-                # Zaktualizowano etykietę pola powierzchni w interfejsie użytkownika
-                self.surface_area_result.setText(f'Surface area: {area_sum:.3f} [m2]')
-                
-                # Zwracamy obliczoną powierzchnię
-                return area_sum
-            else:
-                self.show_error_message("Error: Incorrect number of points selected")
-                return None
+    def area_function(self):
+        if not self.check_current_layer():
+            return None
+        num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
+        if num_elements >= 3:  # Zmieniono warunek na sprawdzenie przynajmniej trzech punktów
+            selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
+            points = []
+            for feature in selected_features:
+                point = feature.geometry().asPoint()
+                points.append([point.x(), point.y()])
+            points = self.sort_points(points)
+            area_sum = 0
+            for i in range(len(points)):
+                if i < len(points) - 1:
+                    P = (points[i][0] * (points[i + 1][1] - points[i - 1][1]))
+                    area_sum += P
+            P = (points[-1][0] * (points[-2][1]))
+            area_sum += P
+            area_sum = 0.5 * abs(area_sum)
+            
+            # Zaktualizowano etykietę pola powierzchni w interfejsie użytkownika
+            self.surface_area_result.setText(f'Surface area: {area_sum:.3f} [m2]')
+            
+            # Zwracamy obliczoną powierzchnię
+            return area_sum
+        else:
+            self.show_error_message("Error: Incorrect number of points selected")
+            return None
 
         
     def clear_array_function(self):
