@@ -72,7 +72,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
     
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
         num_elements = len(selected_features)
-        if num_elements == 2:
+        if num_elements == 1:
             points = [[feature.geometry().asPoint().x(), feature.geometry().asPoint().y()] for feature in selected_features]
             distance = sqrt((points[0][0] - points[1][0])**2 + (points[0][1] - points[1][1])**2)
             self.segment_length_result.setText(f'Distance between points (point id:1- id:2) is: {distance:.3f} [m]')
@@ -136,7 +136,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         num_elements = len(selected_features)
         print(f"Number of selected elements: {num_elements}")  # Debugging
 
-        if num_elements == 2:
+        if num_elements == 1:
             K = []
             for element in selected_features:
                 wsp = element.geometry().asPoint()
@@ -195,7 +195,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             return
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
         coords = ""
-        point_id = 1
+        point_id = 0
         for feature in selected_features:
             wsp = feature.geometry().asPoint()
             X = wsp.x()
@@ -238,9 +238,9 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def area_function(self):
         if not self.check_current_layer():
-            return
+            return None
         num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
-        if num_elements >= 3:
+        if num_elements >= 2:
             selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
             points = []
             for feature in selected_features:
@@ -255,21 +255,13 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             P = (points[-1][0] * (points[-2][1]))
             area_sum += P
             area_sum = 0.5 * abs(area_sum)
-        
-            if 'square_meters' == self.area_unit.currentText():
-                self.surface_area_result.setText(f'Surface area is: {area_sum:.3f} [m2]')
-            elif 'hectares' == self.area_unit.currentText():
-                area_sum = area_sum * 0.0001
-                self.surface_area_result.setText(f'Surface area is: {area_sum:.7f} [ha]')
-            elif 'ares' == self.area_unit.currentText():
-                area_sum = area_sum * 0.01
-                self.surface_area_result.setText(f'Surface area is: {area_sum:.5f} [a]')
-            elif 'square_kilometers' == self.area_unit.currentText():
-                area_sum = area_sum * 0.000001
-                self.surface_area_result.setText(f'Surface area is: {area_sum:.9f} [km2]')
+            
+            # Zwracamy obliczoną powierzchnię
+            return area_sum
         else:
             self.show_error_message("Error: Incorrect number of points selected")
-
+            return None
+        
     def clear_array_function(self):
         self.coordinates.clear()
         self.show_point_count.clear()
@@ -283,11 +275,11 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         self.clear_array_function()
         self.mMapLayerComboBox_layers.clear()
 
-    def save_file_function(self):
+    def save_file_function(self, filename):
         azimuth_text = ""
         reverse_azimuth_text = ""
         
-        with open("Result_File_Plugin_Alicja_Oliwia.txt", "w") as file:
+        with open(filename, "w") as file:
             selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
             num_points = len(selected_features)
             file.write(f'Number of selected points: {num_points}\n')
@@ -318,7 +310,8 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             elif num_elements == 3:
                 area = self.area_function()
                 if area is not None:
-                    file.write(area + '\n')
+                    # Zapisujemy obliczoną powierzchnię do pliku
+                    file.write(f'Surface area is: {area:.3f} [m2]\n')
     
             file.write(azimuth_text + '\n')
             file.write(reverse_azimuth_text + '\n')
