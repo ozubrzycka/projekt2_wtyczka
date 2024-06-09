@@ -79,6 +79,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             return distance
         else:
             self.show_error_message("Error: Incorrect number of points selected")
+
     def extract_coordinates(self, selected_features):
         coords = []
         for feature in selected_features:
@@ -323,9 +324,8 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
             file.write(reverse_azimuth_text + '\n')
     
             height_difference = self.height_difference_function()
-    
-
-
+            if height_difference is not None:
+                file.write(f'Height difference: {height_difference:.3f}[m]\n')
 
     def select_file_function(self):
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open File", "", "Text Files (*.txt);;All Files (*)")
@@ -349,8 +349,3 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                         self.segment_length_result.setText(section.replace("Segment Length:\n", ""))
                     elif section.startswith("Surface Area:"):
                         self.surface_area_result.setText(section.replace("Surface Area:\n", ""))
-
-
-def run():
-    dialog = wtyczkaoaDialog()
-    dialog.show()
