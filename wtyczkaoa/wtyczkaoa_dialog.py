@@ -152,16 +152,16 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         if not self.check_current_layer():
             return
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
-        coords = []
+        coords = ""
         point_id = 0
         for feature in selected_features:
             wsp = feature.geometry().asPoint()
             X = wsp.x()
             Y = wsp.y()
-            coords.append([X, Y])
+            coords += f'Coordinates of point {point_id}: X = {X:.3f}, Y = {Y:.3f}\n'
             point_id += 1
-            self.coordinates.append(f'Coordinates of point {point_id}: X = {X:.3f}, Y = {Y:.3f}')
-        
+        self.coordinates.setText(coords)
+
 
     def height_difference_function(self):
         if not self.check_current_layer():
