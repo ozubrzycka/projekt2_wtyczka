@@ -159,16 +159,22 @@ class wtyczkaoa:
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-
+    
         icon_path = ':/plugins/wtyczkaoa/icon.png'
         self.add_action(
             icon_path,
             text=self.tr(u'wtyczkaoa'),
             callback=self.run,
             parent=self.iface.mainWindow())
-
+    
         # will be set False in run()
         self.first_start = True
+        
+        # Create the dialog with elements (after translation) and keep reference
+        # Only create GUI ONCE in callback, so that it will only load when the plugin is started
+        if self.first_start == True:
+            self.first_start = False
+            self.dlg = wtyczkaoaDialog()
 
 
     def unload(self):
@@ -182,14 +188,7 @@ class wtyczkaoa:
 
     def run(self):
         """Run method that performs all the real work"""
-
-        # Create the dialog with elements (after translation) and keep reference
-        # Only create GUI ONCE in callback, so that it will only load when the plugin is started
-        if self.first_start == True:
-            self.first_start = False
-            self.dlg = wtyczkaoaDialog()
-            
-
+    
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
