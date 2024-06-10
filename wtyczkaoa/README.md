@@ -1,4 +1,4 @@
-# Instrukcja obsługi Wtyczki do programu QGis
+# Instrukcja obsługi Wtyczki do programu QGIS
 Wtyczka umożliwia wykonanie następujących operacji w programie QGIS:\
 Operacje na dwóch punktach:
 - Obliczenie różnicy wysokości,
@@ -19,17 +19,17 @@ Dodatkowe możliwości programu:
 - QGIS 3.34.7
 - System operacyjny: Windows 11
 
-#Zalecenia 
+# Zalecenia 
 - pobranie wtyczki i skompresowanie do pliku ZIP
 - instalacja wtyczki w programie QGIS z pliku zip przez: "Wtyczki" --> "Zarządzanie wtyczkami" --> "Insaluj z pliku ZIP"
 
-# Jednostki obliczeń:
+# Jednostki obliczeń
 - Różnica wysokości: metry (m).
 - Odległość: metry (m).
 - Azymut i azymut odwrotny: stopnie dziesiętne (deg), grady (g).
 - Pole powierzchni: metry kwadratowe (m²), kilometry kwadratowe (km²), ary (a), hektary (ha).
 
-# Sposób użycia:
+# Sposób użycia
 Wtyczka umożliwia wykonywanie wymienionych operacji w określonej wersji QGIS. Poniżej znajduje się opis funkcji każdego przycisku oraz instrukcja dotycząca wczytywania pliku.
 
 - Pole wyboru "Aktualna warstwa"\
@@ -62,11 +62,11 @@ Przykład dla układu PL-1992:
 - Wyświetl współrzędne\
 Naciśnięcie przycisku powoduje wyświetlenie wspólrzędnych w przystosowanym do tego oknie. Wyświetlane współrzędne - przykład:
 
-Coordinates of point 1: X = 45678.910, Y = 123456.789
+Coordinates of point 1: X = 45678.910, Y = 123456.789\
 Coordinates of point 2: X = 34578.910, Y = 987666.789
 
-# Zapisz wyniki\
-Przycisk zapisuje wyniki do pliku oraz prosi o wybranie lokalizacji zapisywanego pliku oraz podanie nazwy dla zapisywanego pliku. Format plików wyjściowych - wtyczka nie zapisuje wszytskich obliczonych danych, tylko wybrane:
+# Zapisanie wyników 
+Zapisz wynik: Przycisk zapisuje wyniki do pliku oraz prosi o wybranie lokalizacji zapisywanego pliku oraz podanie nazwy dla zapisywanego pliku. Format plików wyjściowych - wtyczka nie zapisuje wszytskich obliczonych danych, tylko wybrane:
 Plik po zapisie 2 punkty:\
 Number of selected points: 2\
 Coordinates of point number 1: X = 421378.051, Y = 374614.121\
@@ -81,7 +81,7 @@ Coordinates of point number 2: X = 440463.719, Y = 368503.516\
 Coordinates of point number 3: X = 437051.935, Y = 380374.374
 
 
-# Znane błędy i nietypowe zachowania:
+# Znane błędy i nietypowe zachowania
 
 Błąd po podaniu nazwy zapisywanego pliku i zapisaniu pliku z dwoma punktami. Plik się zapisuje w podanej lokalizacji, ale pojawia się poniższe okno z błędem:
 
