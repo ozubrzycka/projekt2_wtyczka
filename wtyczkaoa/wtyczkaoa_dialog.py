@@ -196,7 +196,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
         num_elements = len(selected_features)
         
-        if num_elements >= 3:
+        if num_elements == 3:
             points = []
             for feature in selected_features:
                 point = feature.geometry().asPoint()
