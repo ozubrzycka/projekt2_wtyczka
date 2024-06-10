@@ -200,14 +200,14 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 point = feature.geometry().asPoint()
                 points.append([point.x(), point.y()])
             points = self.sort_points(points)
-            area_sum = 0
-            for i in range(len(points)):
-                if i < len(points) - 1:
-                    P = (points[i][0] * (points[i + 1][1] - points[i - 1][1]))
-                    area_sum += P
-            P=(points[-1][0]*(points[0][1]-points[-2][1]))
-            area_sum += P
-            area_sum = 0.5 * abs(area_sum)
+            P = 0
+            n = len(num_elements)
+            for i in range(n):
+                j = (i + 1) % n 
+                P += points[i][0] * points[j][1]
+                P -= points[j][0] * points[i][1]
+                
+            area_sum = 0.5 * abs(P)
         
             if 'square_meters' == self.area_unit.currentText():
                 self.surface_area_result.setText(f'Surface area is: {area_sum:.3f} [m2]')
