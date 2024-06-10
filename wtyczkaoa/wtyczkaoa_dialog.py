@@ -205,7 +205,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 if i < len(points) - 1:
                     P = (points[i][0] * (points[i + 1][1] - points[i - 1][1]))
                     area_sum += P
-            P = (points[-1][0] * (points[-2][1]))
+            P=(points[-1][0]*(points[0][1]-points[-2][1]))
             area_sum += P
             area_sum = 0.5 * abs(area_sum)
         
