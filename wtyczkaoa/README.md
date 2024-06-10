@@ -71,17 +71,17 @@ Coordinates of point number 3: X = 437051.935, Y = 380374.374
 
 # Znane błędy i nietypowe zachowania:
 
-Błąd po zapisaniu pliku z dwoma punktami:\
+Błąd po zapisaniu pliku z dwoma punktami:
 
-TypeError: cannot unpack non-iterable NoneType object\ 
-Traceback (most recent call last):\
+TypeError: cannot unpack non-iterable NoneType object
+Traceback (most recent call last):
   File "C:\Users/ozubr/AppData/Roaming/QGIS/QGIS3\profiles\default/python/plugins\wtyczkaoa\wtyczkaoa_dialog.py", line 252, in save_file_function\
     azimuth, reverse_azimuth = self.azimuth_function()  # Update: Added azimuth calculation\
-TypeError: cannot unpack non-iterable NoneType object \
+TypeError: cannot unpack non-iterable NoneType object 
 
 
-Błąd po zapisaniu pliku z 3 punktami: \
-Error: Incorect Number of points selected\
+Błąd po zapisaniu pliku z 3 punktami: 
+Error: Incorect Number of points selected
 
 
 
