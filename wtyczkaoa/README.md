@@ -81,6 +81,7 @@ TypeError: cannot unpack non-iterable NoneType object
 
 
 Błąd po zapisaniu pliku z 3 punktami: 
+
 Error: Incorect Number of points selected
 
 
