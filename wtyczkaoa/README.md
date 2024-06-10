@@ -19,6 +19,10 @@ Dodatkowe możliwości programu:
 - QGIS 3.34.7
 - System operacyjny: Windows 11
 
+#Zalecenia 
+- pobranie wtyczki i skompresowanie do pliku ZIP
+- instalacja wtyczki w programie QGIS z pliku zip przez: "Wtyczki" --> "Zarządzanie wtyczkami" --> "Insaluj z pliku ZIP"
+
 # Jednostki obliczeń:
 - Różnica wysokości: metry (m).
 - Odległość: metry (m).
