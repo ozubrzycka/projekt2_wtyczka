@@ -193,7 +193,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
         if not self.check_current_layer():
             return
         num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
-        if num_elements >= 3:
+        if num_elements == 3:
             selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
             points = []
             for feature in selected_features:
