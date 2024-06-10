@@ -54,6 +54,21 @@ Przykład dla układu PL-1992:
 
 1201504.672, 698011.536
 
+# Format plików wyjściowych
+plik po zapisie 2 punkty\
+Number of selected points: 2\
+Coordinates of point number 1: X = 421378.051, Y = 374614.121\
+Coordinates of point number 2: X = 440463.719, Y = 368503.516\
+Distance between points (point id:1- id:2) is: 20040.016 [m]
+
+
+plik po zapisie 3 punkty:\
+Number of selected points: 3\
+Coordinates of point number 1: X = 421378.051, Y = 374614.121\
+Coordinates of point number 2: X = 440463.719, Y = 368503.516\
+Coordinates of point number 3: X = 437051.935, Y = 380374.374
+
+
 # Znane błędy i nietypowe zachowania:
 
 Błąd po zapisaniu pliku z dwoma punktami:\
@@ -68,18 +83,6 @@ TypeError: cannot unpack non-iterable NoneType object \
 Błąd po zapisaniu pliku z 3 punktami: \
 Error: Incorect Number of points selected\
 
-plik po zapisie 2 punkty\
-Number of selected points: 2\
-Coordinates of point number 1: X = 421378.051, Y = 374614.121\
-Coordinates of point number 2: X = 440463.719, Y = 368503.516\
-Distance between points (point id:1- id:2) is: 20040.016 [m]\
-
-
-plik po zapisie 3 punkty:\
-Number of selected points: 3\
-Coordinates of point number 1: X = 421378.051, Y = 374614.121\
-Coordinates of point number 2: X = 440463.719, Y = 368503.516\
-Coordinates of point number 3: X = 437051.935, Y = 380374.374\
 
 
 
