@@ -192,23 +192,26 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
     def area_function(self):
         if not self.check_current_layer():
             return
-        num_elements = len(self.mMapLayerComboBox_layers.currentLayer().selectedFeatures())
-        if num_elements == 3:
-            selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
+    
+        selected_features = self.mMapLayerComboBox_layers.currentLayer().selectedFeatures()
+        num_elements = len(selected_features)
+        
+        if num_elements >= 3:
             points = []
             for feature in selected_features:
                 point = feature.geometry().asPoint()
                 points.append([point.x(), point.y()])
             points = self.sort_points(points)
+    
             P = 0
-            n = len(num_elements)
+            n = len(points)
             for i in range(n):
                 j = (i + 1) % n 
                 P += points[i][0] * points[j][1]
                 P -= points[j][0] * points[i][1]
-                
+            
             area_sum = 0.5 * abs(P)
-        
+            
             if 'square_meters' == self.area_unit.currentText():
                 self.surface_area_result.setText(f'Surface area is: {area_sum:.3f} [m2]')
             elif 'hectares' == self.area_unit.currentText():
@@ -222,6 +225,7 @@ class wtyczkaoaDialog(QtWidgets.QDialog, FORM_CLASS):
                 self.surface_area_result.setText(f'Surface area is: {area_sum:.9f} [km2]')
         else:
             self.show_error_message("Error: Incorrect number of points selected")
+
 
     def clear_array_function(self):
         self.coordinates.clear()
